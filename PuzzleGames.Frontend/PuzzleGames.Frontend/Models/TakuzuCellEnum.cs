@@ -1,6 +1,6 @@
 namespace PuzzleGames.Frontend.Models;
 
-public enum TakuzuEnum
+public enum TakuzuCellEnum
 {
     Empty = 0,
     Water = 1,

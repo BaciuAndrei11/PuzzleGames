@@ -22,14 +22,14 @@ public class TakuzuGameLogic
     {
         switch (TakuzuBoard[row][col].Cell) 
         {   
-            case TakuzuEnum.Empty:
-                TakuzuBoard[row][col].Cell = TakuzuEnum.Water;
+            case TakuzuCellEnum.Empty:
+                TakuzuBoard[row][col].Cell = TakuzuCellEnum.Water;
                 break;
-            case TakuzuEnum.Water:
-                TakuzuBoard[row][col].Cell = TakuzuEnum.Fire;
+            case TakuzuCellEnum.Water:
+                TakuzuBoard[row][col].Cell = TakuzuCellEnum.Fire;
                 break;
-            case TakuzuEnum.Fire:
-                TakuzuBoard[row][col].Cell = TakuzuEnum.Empty;
+            case TakuzuCellEnum.Fire:
+                TakuzuBoard[row][col].Cell = TakuzuCellEnum.Empty;
                 break;
         }
     }

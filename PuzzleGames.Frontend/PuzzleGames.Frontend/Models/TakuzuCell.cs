@@ -2,9 +2,11 @@ namespace PuzzleGames.Frontend.Models;
 
 public class TakuzuCell
 {
-    public TakuzuCell(TakuzuEnum cell)
+    public TakuzuCell(TakuzuCellEnum cell, TakuzuLineEnum line)
     {
         Cell = cell;
+        LineValue = line;
     }
-    public TakuzuEnum Cell { get; set; }
+    public TakuzuCellEnum Cell { get; set; }
+    public TakuzuLineEnum LineValue { get; set; }
 }

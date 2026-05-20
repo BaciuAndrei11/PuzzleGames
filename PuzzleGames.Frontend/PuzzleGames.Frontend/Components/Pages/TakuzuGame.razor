@@ -10,25 +10,23 @@
        style="border-collapse: collapse; border: 3px solid #6c757d;">
     @for (int rowIndex = 0; rowIndex < TakuzuGameLogic.TakuzuBoard.Count; rowIndex++)
     {
-        int r = rowIndex;
         <tr>
             @for (int colIndex = 0; colIndex < TakuzuGameLogic.TakuzuBoard[rowIndex].Count; colIndex++)
             {
-                int c = colIndex;
                 <td class="text-center align-middle position-relative" 
                     style="width: 80px; height: 80px; border: 2px solid #dee2e6; background-color: #ffffff;"
-                    @onclick="() => HandleClick(r, c)">
+                    @onclick="() => HandleClick(rowIndex, colIndex)">
                     
-                    @if (TakuzuGameLogic.TakuzuBoard[rowIndex][colIndex].Cell == TakuzuEnum.Water)
+                    @if (TakuzuGameLogic.TakuzuBoard[rowIndex][colIndex].Cell == TakuzuCellEnum.Water)
                     {
                         <i class="bi bi-droplet-fill text-primary" style="font-size: 3rem;"></i>
                     }
-                    else if (TakuzuGameLogic.TakuzuBoard[rowIndex][colIndex].Cell == TakuzuEnum.Fire)
+                    else if (TakuzuGameLogic.TakuzuBoard[rowIndex][colIndex].Cell == TakuzuCellEnum.Fire)
                     {
                         <i class="bi bi-fire text-warning" style="font-size: 3rem;"></i>
                     }
 
-                    @if (colIndex == 3 && rowIndex == 1 )
+                    @if (TakuzuGameLogic.TakuzuBoard[rowIndex][colIndex].LineValue == TakuzuLineEnum.Equal)
                     {
                         <span class="position-absolute translate-middle-y bg-white text-dark"
                               style="right: -14px; top: 50%; width: 24px; height: 24px; font-weight: bold; font-size: 0.9rem; z-index: 10;">
@@ -36,7 +34,7 @@
                         </span>
                     }
 
-                    @if (colIndex == 2 && rowIndex == 0 )
+                    @if (TakuzuGameLogic.TakuzuBoard[rowIndex][colIndex].LineValue == TakuzuLineEnum.Different)
                     {
                         <span class="position-absolute translate-middle-x bg-white text-dark"
                               style="bottom: -14px; left: 50%; width: 24px; height: 24px; font-weight: bold; font-size: 0.9rem; z-index: 10;">
@@ -53,12 +51,12 @@
 {
     static List<List<TakuzuCell>> TakuzuBoard = new List<List<TakuzuCell>>
     {
-        new List<TakuzuCell>{new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty)},
-        new List<TakuzuCell>{new TakuzuCell(TakuzuEnum.Fire), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty)},
-        new List<TakuzuCell>{new TakuzuCell(TakuzuEnum.Fire), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty)},
-        new List<TakuzuCell>{new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty)},
-        new List<TakuzuCell>{new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Water), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Water)},
-        new List<TakuzuCell>{new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty), new TakuzuCell(TakuzuEnum.Empty)}
+        new List<TakuzuCell>{new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None)},
+        new List<TakuzuCell>{new TakuzuCell(TakuzuCellEnum.Fire, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.Different), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None)},
+        new List<TakuzuCell>{new TakuzuCell(TakuzuCellEnum.Fire, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.Equal), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None)},
+        new List<TakuzuCell>{new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None)},
+        new List<TakuzuCell>{new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Water, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Water, TakuzuLineEnum.None)},
+        new List<TakuzuCell>{new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None), new TakuzuCell(TakuzuCellEnum.Empty, TakuzuLineEnum.None)}
     };
 
     private TakuzuGameLogic TakuzuGameLogic;
