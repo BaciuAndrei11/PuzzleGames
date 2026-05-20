@@ -20,6 +20,8 @@ public class TakuzuGameLogic
 
     public void ChangeCellValue(int row, int col)
     {
+        if(TakuzuBoard[row][col].IsFixed == true)
+            return;
         switch (TakuzuBoard[row][col].Cell) 
         {   
             case TakuzuCellEnum.Empty:
