@@ -2,13 +2,15 @@ namespace PuzzleGames.Frontend.Models;
 
 public class TakuzuCell
 {
-    public TakuzuCell(TakuzuCellEnum cell, TakuzuLineEnum line, bool isFixed)
+    public TakuzuCell()
     {
-        Cell = cell;
-        LineValue = line;
-        IsFixed = isFixed;
+        Cell = TakuzuCellEnum.Empty;
+        HorizontalLineValue = TakuzuLineEnum.None;
+        VerticalLineValue = TakuzuLineEnum.None;
+        IsFixed = false;
     }
     public TakuzuCellEnum Cell { get; set; }
-    public TakuzuLineEnum LineValue { get; set; }
+    public TakuzuLineEnum HorizontalLineValue { get; set; }
+    public TakuzuLineEnum VerticalLineValue { get; set; }
     public bool IsFixed { get; set; }
 }
