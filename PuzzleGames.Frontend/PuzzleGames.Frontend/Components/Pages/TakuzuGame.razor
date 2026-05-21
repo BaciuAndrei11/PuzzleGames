@@ -64,7 +64,13 @@
         </tr>
     }
 </table>
-<div class="d-flex justify-content-center mt-4">
+<div class="d-flex justify-content-center gap-1 mt-4">
+    <button type="button" class="btn btn-secondary" @onclick="Undo" disabled="@(!TakuzuGameLogic.CanUndo)">
+        <i class="bi bi-arrow-counterclockwise"></i>
+    </button>
+    <button type="button" class="btn btn-secondary" @onclick="Redo" disabled="@(!TakuzuGameLogic.CanRedo)">
+        <i class="bi bi-arrow-clockwise"></i>
+    </button>
     <button type="button" class="btn btn-secondary" @onclick="ResetClick">Reset</button>
 </div>
 
@@ -94,6 +100,18 @@
     private void ResetClick()
     {
         TakuzuGameLogic.ResetBoard();
+        StateHasChanged();
+    }
+
+    private void Undo()
+    {
+        TakuzuGameLogic.Undo();
+        StateHasChanged();
+    }
+    
+    private void Redo()
+    {
+        TakuzuGameLogic.Redo();
         StateHasChanged();
     }
 }

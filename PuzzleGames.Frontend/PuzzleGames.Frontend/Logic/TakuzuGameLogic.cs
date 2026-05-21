@@ -10,15 +10,16 @@ public class TakuzuGameLogic
     public int Rows { get; set; }
     public int Cols { get; set; }
     public bool IsGameOver { get; set; }
-    private Random _random = new Random();
-    
-
-    public TakuzuGameLogic()
-    {
-    }
+    private Stack<MoveAction> _undoStack = new Stack<MoveAction>();
+    private Stack<MoveAction> _redoStack = new Stack<MoveAction>();
+    public bool CanUndo => _undoStack.Count > 0;
+    public bool CanRedo => _redoStack.Count > 0;
 
     public void GenerateNewGame(int size)
     {
+        _undoStack.Clear();
+        _redoStack.Clear();
+        
         TakuzuBoard = new List<List<TakuzuCell>>();
         for (int r = 0; r < size; r++)
         {
@@ -44,6 +45,9 @@ public class TakuzuGameLogic
     {
         if(TakuzuBoard[row][col].IsFixed == true)
             return;
+        
+        var previousValue = TakuzuBoard[row][col].Cell;
+        
         switch (TakuzuBoard[row][col].Cell) 
         {   
             case TakuzuCellEnum.Empty:
@@ -59,10 +63,49 @@ public class TakuzuGameLogic
 
         TakuzuGameUtility.ValidateBoard(TakuzuBoard);
         IsGameOver = TakuzuGameUtility.IsGameOver(TakuzuBoard);
+        
+        var newValue = TakuzuBoard[row][col].Cell;
+        _undoStack.Push(new MoveAction
+        {
+            Row = row,
+            Col = col,
+            PreviousValue = previousValue,
+            NewValue = newValue
+        });
+
+        _redoStack.Clear();
     }
 
     public void ResetBoard()
     {
         TakuzuBoard = TakuzuGameUtility.CloneBoard(GeneratedBoard);
+        _undoStack.Clear();
+        _redoStack.Clear();
+    }
+    
+    public void Undo()
+    {
+        if (!CanUndo) 
+            return;
+
+        var lastMove = _undoStack.Pop();
+        _redoStack.Push(lastMove);
+
+        TakuzuBoard[lastMove.Row][lastMove.Col].Cell = lastMove.PreviousValue;
+
+        TakuzuGameUtility.ValidateBoard(TakuzuBoard);
+    }
+
+    public void Redo()
+    {
+        if (!CanRedo) 
+            return;
+
+        var nextMove = _redoStack.Pop();
+        _undoStack.Push(nextMove);
+
+        TakuzuBoard[nextMove.Row][nextMove.Col].Cell = nextMove.NewValue;
+
+        TakuzuGameUtility.ValidateBoard(TakuzuBoard);
     }
 }
