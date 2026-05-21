@@ -6,10 +6,12 @@ namespace PuzzleGames.Frontend.Logic;
 public class TakuzuGameLogic
 {
     public List<List<TakuzuCell>> TakuzuBoard { get; set; }
+    public List<List<TakuzuCell>> GeneratedBoard { get; set; }
     public int Rows { get; set; }
     public int Cols { get; set; }
-    
+    public bool IsGameOver { get; set; }
     private Random _random = new Random();
+    
 
     public TakuzuGameLogic()
     {
@@ -29,10 +31,13 @@ public class TakuzuGameLogic
         }
         Rows = size;
         Cols = size;
+        IsGameOver = false;
         
         TakuzuGameUtility.GenerateFullRandomBoard(0, 0, TakuzuBoard);
         TakuzuGameUtility.GenerateHorizontalAndVerticalClues(TakuzuBoard);
         TakuzuGameUtility.GenerateClues(TakuzuBoard);
+
+        GeneratedBoard = TakuzuGameUtility.CloneBoard(TakuzuBoard);
     }
 
     public void ChangeCellValue(int row, int col)
@@ -51,5 +56,13 @@ public class TakuzuGameLogic
                 TakuzuBoard[row][col].Cell = TakuzuCellEnum.Empty;
                 break;
         }
+
+        TakuzuGameUtility.ValidateBoard(TakuzuBoard);
+        IsGameOver = TakuzuGameUtility.IsGameOver(TakuzuBoard);
+    }
+
+    public void ResetBoard()
+    {
+        TakuzuBoard = TakuzuGameUtility.CloneBoard(GeneratedBoard);
     }
 }

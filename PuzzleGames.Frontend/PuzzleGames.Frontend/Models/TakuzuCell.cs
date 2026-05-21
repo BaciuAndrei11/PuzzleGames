@@ -8,9 +8,11 @@ public class TakuzuCell
         HorizontalLineValue = TakuzuLineEnum.None;
         VerticalLineValue = TakuzuLineEnum.None;
         IsFixed = false;
+        IsValid = true;
     }
     public TakuzuCellEnum Cell { get; set; }
     public TakuzuLineEnum HorizontalLineValue { get; set; }
     public TakuzuLineEnum VerticalLineValue { get; set; }
     public bool IsFixed { get; set; }
+    public bool IsValid { get; set; }
 }

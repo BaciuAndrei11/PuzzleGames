@@ -124,6 +124,185 @@ public static class TakuzuGameUtility
                     takuzuBoard[r][c].IsFixed = true;
     }
     
+    public static void ValidateBoard(List<List<TakuzuCell>> takuzuBoard)
+    {
+        for (int r = 0; r < takuzuBoard.Count; r++)
+        {
+            for (int c = 0; c < takuzuBoard.Count; c++)
+            {
+                takuzuBoard[r][c].IsValid = true;
+            }
+        }
+
+        CheckGlobalConsecutiveRules(takuzuBoard);
+
+        CheckGlobalClueRules(takuzuBoard);
+
+        CheckGlobalCountingRules(takuzuBoard);
+    }
+
+    public static bool IsGameOver(List<List<TakuzuCell>> takuzuBoard)
+    {
+        return takuzuBoard
+            .SelectMany(cell => cell)
+            .All(cell => cell.Cell != TakuzuCellEnum.Empty && cell.IsValid);
+    }
+
+    private static void CheckGlobalConsecutiveRules(List<List<TakuzuCell>> takuzuBoard)
+    {
+        for (int r = 0; r < takuzuBoard.Count; r++)
+        {
+            for (int c = 0; c < takuzuBoard.Count; c++)
+            {
+                if (c <= takuzuBoard.Count - 3)
+                {
+                    var c1 = takuzuBoard[r][c];
+                    var c2 = takuzuBoard[r][c + 1];
+                    var c3 = takuzuBoard[r][c + 2];
+
+                    if (c1.Cell != TakuzuCellEnum.Empty && c1.Cell == c2.Cell && c2.Cell == c3.Cell)
+                    {
+                        c1.IsValid = false;
+                        c2.IsValid = false;
+                        c3.IsValid = false;
+                    }
+                }
+
+                if (r <= takuzuBoard.Count - 3)
+                {
+                    var r1 = takuzuBoard[r][c];
+                    var r2 = takuzuBoard[r + 1][c];
+                    var r3 = takuzuBoard[r + 2][c];
+
+                    if (r1.Cell != TakuzuCellEnum.Empty && r1.Cell == r2.Cell && r2.Cell == r3.Cell)
+                    {
+                        r1.IsValid = false;
+                        r2.IsValid = false;
+                        r3.IsValid = false;
+                    }
+                }
+            }
+        }
+    }
+
+    private static void CheckGlobalClueRules(List<List<TakuzuCell>> takuzuBoard)
+    {
+        for (int r = 0; r < takuzuBoard.Count; r++)
+        {
+            for (int c = 0; c < takuzuBoard.Count; c++)
+                {
+                    if (c < takuzuBoard.Count - 1 && takuzuBoard[r][c].HorizontalLineValue != TakuzuLineEnum.None)
+                    {
+                        var left = takuzuBoard[r][c];
+                        var right = takuzuBoard[r][c + 1];
+
+                        if (left.Cell != TakuzuCellEnum.Empty && right.Cell != TakuzuCellEnum.Empty)
+                        {
+                            if (takuzuBoard[r][c].HorizontalLineValue == TakuzuLineEnum.Equal && left.Cell != right.Cell)
+                            {
+                                left.IsValid = false; right.IsValid = false; 
+                            }
+                            if (takuzuBoard[r][c].HorizontalLineValue == TakuzuLineEnum.Different && left.Cell == right.Cell)
+                            {
+                                left.IsValid = false; right.IsValid = false;
+                            }
+                        }
+                    }
+
+                    if (r < takuzuBoard.Count - 1 && takuzuBoard[r][c].VerticalLineValue != TakuzuLineEnum.None)
+                    {
+                        var top = takuzuBoard[r][c];
+                        var bottom = takuzuBoard[r + 1][c];
+
+                        if (top.Cell != TakuzuCellEnum.Empty && bottom.Cell != TakuzuCellEnum.Empty)
+                        {
+                            if (takuzuBoard[r][c].VerticalLineValue == TakuzuLineEnum.Equal && top.Cell != bottom.Cell)
+                            {
+                                top.IsValid = false; bottom.IsValid = false; 
+                            }
+                            if (takuzuBoard[r][c].VerticalLineValue == TakuzuLineEnum.Different && top.Cell == bottom.Cell)
+                            {
+                                top.IsValid = false; bottom.IsValid = false; 
+                            }
+                        }
+                    }
+                }
+            }
+    }
+
+    private static void CheckGlobalCountingRules(List<List<TakuzuCell>> takuzuBoard)
+    {
+        int maxAllowed =  takuzuBoard.Count / 2;
+
+        for (int r = 0; r < takuzuBoard.Count; r++)
+        {
+            int waterCount = 0; int fireCount = 0;
+            for (int c = 0; c < takuzuBoard.Count; c++)
+            {
+                if (takuzuBoard[r][c].Cell == TakuzuCellEnum.Water) waterCount++;
+                if (takuzuBoard[r][c].Cell == TakuzuCellEnum.Fire) fireCount++;
+            }
+
+            if (waterCount > maxAllowed)
+                for (int c = 0; c < takuzuBoard.Count; c++) if (takuzuBoard[r][c].Cell == TakuzuCellEnum.Water) takuzuBoard[r][c].IsValid = false;
+
+            if (fireCount > maxAllowed)
+                for (int c = 0; c < takuzuBoard.Count; c++) if (takuzuBoard[r][c].Cell == TakuzuCellEnum.Fire) takuzuBoard[r][c].IsValid = false;
+        }
+
+        for (int c = 0; c < takuzuBoard.Count; c++)
+        {
+            int waterCount = 0; int fireCount = 0;
+            for (int r = 0; r < takuzuBoard.Count; r++)
+            {
+                if (takuzuBoard[r][c].Cell == TakuzuCellEnum.Water) waterCount++;
+                if (takuzuBoard[r][c].Cell == TakuzuCellEnum.Fire) fireCount++;
+            }
+
+            if (waterCount > maxAllowed)
+                for (int r = 0; r < takuzuBoard.Count; r++) if (takuzuBoard[r][c].Cell == TakuzuCellEnum.Water) takuzuBoard[r][c].IsValid = false;
+
+            if (fireCount > maxAllowed)
+                for (int r = 0; r < takuzuBoard.Count; r++) if (takuzuBoard[r][c].Cell == TakuzuCellEnum.Fire) takuzuBoard[r][c].IsValid = false;
+        }
+    }
+    
+    private static bool IsValidPlacement(int row, int col, List<List<TakuzuCell>> takuzuBoard)
+    {
+        TakuzuCellEnum currentType = takuzuBoard[row][col].Cell;
+
+        if (col >= 2 && takuzuBoard[row][col - 1].Cell == currentType && takuzuBoard[row][col - 2].Cell == currentType) return false;
+        if (col >= 1 && col < takuzuBoard.Count - 1 && takuzuBoard[row][col - 1].Cell == currentType && takuzuBoard[row][col + 1].Cell == currentType) return false;
+        if (col < takuzuBoard.Count - 2 && takuzuBoard[row][col + 1].Cell == currentType && takuzuBoard[row][col + 2].Cell == currentType) return false;
+
+        if (row >= 2 && takuzuBoard[row - 1][col].Cell == currentType && takuzuBoard[row - 2][col].Cell == currentType) return false;
+        if (row >= 1 && row < takuzuBoard.Count - 1 && takuzuBoard[row - 1][col].Cell == currentType && takuzuBoard[row + 1][col].Cell == currentType) return false;
+        if (row < takuzuBoard.Count - 2 && takuzuBoard[row + 1][col].Cell == currentType && takuzuBoard[row + 2][col].Cell == currentType) return false;
+
+        int maxAllowed = takuzuBoard.Count / 2;
+        
+        int rowCount = 0;
+        for (int c = 0; c < takuzuBoard.Count; c++)
+        {
+            if (takuzuBoard[row][c].Cell == currentType) 
+                rowCount++;
+        }
+        if (rowCount > maxAllowed) 
+            return false;
+
+        int colCount = 0;
+        for (int r = 0; r < takuzuBoard.Count; r++)
+        {
+            if (takuzuBoard[r][col].Cell == currentType) 
+                colCount++;
+        }
+
+        if (colCount > maxAllowed) 
+            return false;
+
+        return true;
+    }
+    
     private static bool CanBeSolvedLogically(List<List<TakuzuCell>> testBoard)
     {
         bool progressMade = true;
@@ -287,7 +466,7 @@ public static class TakuzuGameUtility
     private static TakuzuCellEnum GetOpposite(TakuzuCellEnum cellType) =>
         cellType == TakuzuCellEnum.Water ? TakuzuCellEnum.Fire : TakuzuCellEnum.Water;
 
-    private static List<List<TakuzuCell>> CloneBoard(List<List<TakuzuCell>> original)
+    public static List<List<TakuzuCell>> CloneBoard(List<List<TakuzuCell>> original)
     {
         var clone = new List<List<TakuzuCell>>();
         for (int r = 0; r < original.Count; r++)
@@ -306,41 +485,5 @@ public static class TakuzuGameUtility
             clone.Add(row);
         }
         return clone;
-    }
-    
-    private static bool IsValidPlacement(int row, int col, List<List<TakuzuCell>> takuzuBoard)
-    {
-        TakuzuCellEnum currentType = takuzuBoard[row][col].Cell;
-
-        if (col >= 2 && takuzuBoard[row][col - 1].Cell == currentType && takuzuBoard[row][col - 2].Cell == currentType) return false;
-        if (col >= 1 && col < takuzuBoard.Count - 1 && takuzuBoard[row][col - 1].Cell == currentType && takuzuBoard[row][col + 1].Cell == currentType) return false;
-        if (col < takuzuBoard.Count - 2 && takuzuBoard[row][col + 1].Cell == currentType && takuzuBoard[row][col + 2].Cell == currentType) return false;
-
-        if (row >= 2 && takuzuBoard[row - 1][col].Cell == currentType && takuzuBoard[row - 2][col].Cell == currentType) return false;
-        if (row >= 1 && row < takuzuBoard.Count - 1 && takuzuBoard[row - 1][col].Cell == currentType && takuzuBoard[row + 1][col].Cell == currentType) return false;
-        if (row < takuzuBoard.Count - 2 && takuzuBoard[row + 1][col].Cell == currentType && takuzuBoard[row + 2][col].Cell == currentType) return false;
-
-        int maxAllowed = takuzuBoard.Count / 2;
-        
-        int rowCount = 0;
-        for (int c = 0; c < takuzuBoard.Count; c++)
-        {
-            if (takuzuBoard[row][c].Cell == currentType) 
-                rowCount++;
-        }
-        if (rowCount > maxAllowed) 
-            return false;
-
-        int colCount = 0;
-        for (int r = 0; r < takuzuBoard.Count; r++)
-        {
-            if (takuzuBoard[r][col].Cell == currentType) 
-                colCount++;
-        }
-
-        if (colCount > maxAllowed) 
-            return false;
-
-        return true;
     }
 }

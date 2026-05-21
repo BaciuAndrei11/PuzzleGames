@@ -16,7 +16,9 @@
             {
                 int col = colIndex;
                 <td class="text-center align-middle position-relative" 
-                    style="width: 80px; height: 80px; border: 2px solid #dee2e6; background-color: #ffffff;"
+                    style="width: 80px; height: 80px; border: 2px solid #dee2e6; cursor: pointer; 
+                        background-color: @(TakuzuGameLogic.TakuzuBoard[row][col].IsValid ? "#ffffff" : "#f8d7da");"
+                    role="button"
                     @onclick="() => HandleClick(row, col)">
                     
                     @if (TakuzuGameLogic.TakuzuBoard[row][col].Cell == TakuzuCellEnum.Water)
@@ -62,6 +64,9 @@
         </tr>
     }
 </table>
+<div class="d-flex justify-content-center mt-4">
+    <button type="button" class="btn btn-secondary" @onclick="ResetClick">Reset</button>
+</div>
 
 @code
 {
@@ -77,6 +82,12 @@
     private void HandleClick(int row, int col)
     {
         TakuzuGameLogic.ChangeCellValue(row, col);
+        StateHasChanged();
+    }
+
+    private void ResetClick()
+    {
+        TakuzuGameLogic.ResetBoard();
         StateHasChanged();
     }
 }
