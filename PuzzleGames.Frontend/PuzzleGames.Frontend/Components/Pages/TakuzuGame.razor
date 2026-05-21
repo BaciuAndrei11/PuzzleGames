@@ -70,7 +70,8 @@
     
     protected override void OnInitialized()
     {
-        TakuzuGameLogic = new TakuzuGameLogic(Size);
+        TakuzuGameLogic = new TakuzuGameLogic();
+        TakuzuGameLogic.GenerateNewGame(Size);
     }
     
     private void HandleClick(int row, int col)

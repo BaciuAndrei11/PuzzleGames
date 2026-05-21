@@ -10,7 +10,11 @@ public class TakuzuGameLogic
     
     private Random _random = new Random();
 
-    public TakuzuGameLogic(int size)
+    public TakuzuGameLogic()
+    {
+    }
+
+    public void GenerateNewGame(int size)
     {
         TakuzuBoard = new List<List<TakuzuCell>>();
         for (int r = 0; r < size; r++)
@@ -24,8 +28,10 @@ public class TakuzuGameLogic
         }
         Rows = size;
         Cols = size;
+        
         GenrateFullRandomBoard(0, 0);
         GenerateAllClues();
+        ApplyDifficultyMask();
     }
 
     public void ChangeCellValue(int row, int col)
@@ -45,6 +51,61 @@ public class TakuzuGameLogic
                 break;
         }
     }
+    
+    private void ApplyDifficultyMask()
+    {
+        int cellsToKeep = 4;
+        int currentCells = Rows * Cols;
+
+        while (currentCells > cellsToKeep)
+        {
+            int r = _random.Next(TakuzuBoard.Count);
+            int c = _random.Next(TakuzuBoard.Count);
+
+            if (TakuzuBoard[r][c].Cell != TakuzuCellEnum.Empty)
+            {
+                TakuzuBoard[r][c].Cell = TakuzuCellEnum.Empty;
+                currentCells--;
+            }
+        }
+
+        for (int r = 0; r < TakuzuBoard.Count; r++)
+        {
+            for (int c = 0; c < TakuzuBoard.Count; c++)
+            {
+                if (TakuzuBoard[r][c].Cell != TakuzuCellEnum.Empty)
+                    TakuzuBoard[r][c].IsFixed = true;
+            }
+        }
+
+        FilterClues(0.05, true);
+        FilterClues(0.05,  false);
+    }
+    
+    private void FilterClues(double visibilityPercentage, bool horizontal)
+    {
+        int rows = TakuzuBoard.Count;
+        int cols = TakuzuBoard[0].Count;
+
+        for (int r = 0; r < rows; r++)
+        {
+            for (int c = 0; c < cols; c++)
+            {
+                if (_random.NextDouble() > visibilityPercentage)
+                {
+                    if (horizontal)
+                    {
+                        TakuzuBoard[r][c].HorizontalLineValue = TakuzuLineEnum.None;
+                    }
+                    else
+                    {
+                        TakuzuBoard[r][c].VerticalLineValue = TakuzuLineEnum.None;
+                    }
+                }
+            }
+        }
+    }
+    
 
     private bool GenrateFullRandomBoard(int row, int col)
     {
