@@ -15,12 +15,12 @@
             @for (int colIndex = 0; colIndex < TakuzuGameLogic.TakuzuBoard[rowIndex].Count; colIndex++)
             {
                 int col = colIndex;
-                <td class="text-center align-middle position-relative" 
+                <td class="text-center align-middle position-relative"
                     style="width: 80px; height: 80px; border: 2px solid #dee2e6; cursor: pointer; 
                         background-color: @(TakuzuGameLogic.TakuzuBoard[row][col].IsValid ? "#ffffff" : "#f8d7da");"
                     role="button"
                     @onclick="() => HandleClick(row, col)">
-                    
+
                     @if (TakuzuGameLogic.TakuzuBoard[row][col].Cell == TakuzuCellEnum.Water)
                     {
                         <i class="bi bi-droplet-fill text-primary" style="font-size: 3rem;"></i>
@@ -68,6 +68,11 @@
     <button type="button" class="btn btn-secondary" @onclick="ResetClick">Reset</button>
 </div>
 
+@if (TakuzuGameLogic.IsGameOver)
+{
+    <FinishGame TakuzuGameLogic="TakuzuGameLogic" OnNewGameGenerated="StateHasChanged" />
+}
+
 @code
 {
     private int Size = 6;
@@ -79,9 +84,10 @@
         TakuzuGameLogic.GenerateNewGame(Size);
     }
     
-    private void HandleClick(int row, int col)
+    private async Task HandleClick(int row, int col)
     {
         TakuzuGameLogic.ChangeCellValue(row, col);
+        await Task.Yield();
         StateHasChanged();
     }
 

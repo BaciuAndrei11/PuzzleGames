@@ -1,0 +1,42 @@
+@using PuzzleGames.Frontend.Logic
+@rendermode InteractiveServer
+
+@using PuzzleGames.Frontend.Logic
+<div class="modal show" tabindex="-1" role="dialog" 
+     style="display: block !important; position: fixed !important; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1050;">
+    
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg">
+            <div class="modal-header bg-success text-white">
+                <h1 class="modal-title fs-5">Game Won!</h1>
+                <button type="button" class="btn-close btn-close-white" @onclick="NewGame" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <p class="fs-4 text-dark mb-1">Congratulations!</p>
+                <p class="text-muted">You have successfully mastered the grid and brought perfect harmony between Fire and Water.</p>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-success px-5" @onclick="NewGame">New Game</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public TakuzuGameLogic TakuzuGameLogic { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback OnNewGameGenerated { get; set; }
+    
+    private async Task NewGame()
+    {
+        if (TakuzuGameLogic?.TakuzuBoard != null)
+        {
+            int currentSize = TakuzuGameLogic.TakuzuBoard.Count;
+            TakuzuGameLogic.GenerateNewGame(currentSize);
+            await OnNewGameGenerated.InvokeAsync();
+        }
+    }
+}
