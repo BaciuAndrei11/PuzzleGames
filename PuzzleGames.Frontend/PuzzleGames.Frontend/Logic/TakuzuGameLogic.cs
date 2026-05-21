@@ -14,6 +14,14 @@ public class TakuzuGameLogic
     private Stack<MoveAction> _redoStack = new Stack<MoveAction>();
     public bool CanUndo => _undoStack.Count > 0;
     public bool CanRedo => _redoStack.Count > 0;
+    
+    private System.Timers.Timer? _timer;
+    private int _secondsElapsed = 0;
+    
+    public event Action? OnTimerTicked;
+
+    public string FormattedTime => 
+        $"{( _secondsElapsed / 60 ):D2}:{( _secondsElapsed % 60 ):D2}";
 
     public void GenerateNewGame(int size)
     {
@@ -39,6 +47,7 @@ public class TakuzuGameLogic
         TakuzuGameUtility.GenerateClues(TakuzuBoard);
 
         GeneratedBoard = TakuzuGameUtility.CloneBoard(TakuzuBoard);
+        StartTimer();
     }
 
     public void ChangeCellValue(int row, int col)
@@ -63,6 +72,10 @@ public class TakuzuGameLogic
 
         TakuzuGameUtility.ValidateBoard(TakuzuBoard);
         IsGameOver = TakuzuGameUtility.IsGameOver(TakuzuBoard);
+        if (IsGameOver)
+        {
+            StopTimer();
+        }
         
         var newValue = TakuzuBoard[row][col].Cell;
         _undoStack.Push(new MoveAction
@@ -108,4 +121,29 @@ public class TakuzuGameLogic
 
         TakuzuGameUtility.ValidateBoard(TakuzuBoard);
     }
+    
+    public void StartTimer()
+    {
+        _timer?.Stop();
+        _timer?.Dispose();
+
+        _secondsElapsed = 0;
+        _timer = new System.Timers.Timer(1000);
+        _timer.Elapsed += (sender, e) =>
+        {
+            if (IsGameOver)
+            {
+                _timer?.Stop();
+            }
+            else
+            {
+                _secondsElapsed++;
+                OnTimerTicked?.Invoke();
+            }
+        };
+        _timer.AutoReset = true;
+        _timer.Start();
+    }
+
+    public void StopTimer() => _timer?.Stop();
 }

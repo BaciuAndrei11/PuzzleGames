@@ -1,10 +1,16 @@
 ﻿@page "/"
 @using PuzzleGames.Frontend.Logic
 @using PuzzleGames.Frontend.Models
+@using System.Timers
 
 @rendermode InteractiveServer
 
 <h1 class="text-center mt-4 text-secondary">Takuzu Puzzle</h1>
+<div class="text-center text-secondary mt-2">
+    <span class=" p-2 fs-5 ">
+        @TakuzuGameLogic.FormattedTime
+    </span>
+</div>
 
 <table class="table-bordered w-auto mx-auto mt-4 shadow rounded position-relative" 
        style="border-collapse: collapse; border: 3px solid #6c757d;">
@@ -88,12 +94,21 @@
     {
         TakuzuGameLogic = new TakuzuGameLogic();
         TakuzuGameLogic.GenerateNewGame(Size);
+        TakuzuGameLogic.OnTimerTicked += HandleTimerTick;
     }
     
-    private async Task HandleClick(int row, int col)
+    private void HandleTimerTick()
+    {
+        
+        _ = InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+    
+    private void HandleClick(int row, int col)
     {
         TakuzuGameLogic.ChangeCellValue(row, col);
-        await Task.Yield();
         StateHasChanged();
     }
 
