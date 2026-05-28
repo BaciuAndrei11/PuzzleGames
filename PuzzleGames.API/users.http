@@ -1,0 +1,28 @@
+GET http://localhost:5096/users
+
+###
+GET http://localhost:5096/users/3
+
+###
+POST http://localhost:5096/users
+Content-Type: application/json
+
+{
+  "username": "andrei2222",
+  "email": "and@gmail.com",
+  "password": "1"
+}
+
+###
+PUT http://localhost:5096/users/3
+Content-Type: application/json
+
+{
+  "username": "andrei1",
+  "email": "andrei22@gmail.com",
+  "password": "1234",
+  "currentLevel": 3
+}
+
+###
+DELETE http://localhost:5096/users/2

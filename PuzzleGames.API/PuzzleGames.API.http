@@ -1,6 +1,0 @@
-@PuzzleGames.API_HostAddress = http://localhost:5096
-
-GET {{PuzzleGames.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
