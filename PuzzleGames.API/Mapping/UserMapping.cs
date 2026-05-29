@@ -1,3 +1,4 @@
+using BCryptNet;
 using PuzzleGames.API.Dtos;
 using PuzzleGames.API.Entities;
 
@@ -11,7 +12,7 @@ public static class UserMapping
         {
             Username = userDto.Username,
             Email = userDto.Email,
-            Password = userDto.Password,
+            Password = BCrypt.HashPassword(userDto.Password),
             CurrentLevel = 1
         };
     }

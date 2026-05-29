@@ -17,7 +17,7 @@
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Password:</label>
-                <InputText id="password" @bind-Value="user.Password" class="form-control"/>
+                <InputText id="password" type="password" @bind-Value="user.Password" class="form-control"/>
             </div>
             <button type="submit" class="btn btn-primary">Login</button>
             <a role="button" class="btn btn-secondary" href="/">Cancel</a>
@@ -29,7 +29,7 @@
 
     private async Task HandleSubmitAsync()
     {
-        var loggedInUser = await UserClient.GetUserByUsernameAsync(user.Username, user.Password);
+        var loggedInUser = await UserClient.GetUserByUsernameAsync(user);
         UserSession.CurrentUser = loggedInUser;
         NavigationManager.NavigateTo("/");
     }

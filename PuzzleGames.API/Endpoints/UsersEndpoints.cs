@@ -27,10 +27,10 @@ public static class UsersEndpoints
             return user is null ? Results.NotFound() : Results.Ok(user);
         }).WithName(GetUserEndpointName);
         
-        // GET /login?username=aaaa&password=1111
-        group.MapGet("/login", async (string username, string password, IUserService userService) =>
+        // POST /login
+        group.MapPost("/login", async (LoginUserDto loginUser, IUserService userService) =>
         {
-            var user = await userService.GetUserByUsernameAsync(username, password);
+            var user = await userService.GetUserByUsernameAsync(loginUser);
             return user is null ? Results.NotFound() : Results.Ok(user);
         }).WithName("GetLoggedInUserEndpointName");
 

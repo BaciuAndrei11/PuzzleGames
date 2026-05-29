@@ -3,6 +3,7 @@ using PuzzleGames.API.Data;
 using PuzzleGames.API.Dtos;
 using PuzzleGames.API.Entities;
 using PuzzleGames.API.Mapping;
+using BCryptNet;
 
 namespace PuzzleGames.API.Services;
 
@@ -21,11 +22,17 @@ public class UserService(PuzzleGamesContext dbContext) : IUserService
         return user?.ToDto();
     }
 
-    public async Task<UserDto> GetUserByUsernameAsync(string username, string password)
+    public async Task<UserDto> GetUserByUsernameAsync(LoginUserDto loginUser)
     {
         var user = await dbContext.Users
-            .FirstOrDefaultAsync(u => u.Username == username 
-                                      && u.Password == password);
+            .FirstOrDefaultAsync(u => u.Username == loginUser.Username);
+        bool isPasswordCorrect = BCrypt.Verify(loginUser.Password, user.Password);
+        
+        if (!isPasswordCorrect)
+        {
+            return null; 
+        }
+        
         return user?.ToDto();
     }
 

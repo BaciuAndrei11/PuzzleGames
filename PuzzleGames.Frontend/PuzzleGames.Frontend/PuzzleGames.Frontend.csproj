@@ -11,4 +11,8 @@
       <ProjectReference Include="..\..\PuzzleGames.API\PuzzleGames.API.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="BCrypt.Net-Next" Version="5.0.0-prerelease.gf86f9271e6" />
+    </ItemGroup>
+
 </Project>

@@ -1,3 +1,4 @@
+using BCryptNet;
 using PuzzleGames.Frontend.Clients;
 using PuzzleGames.Frontend.Models;
 
