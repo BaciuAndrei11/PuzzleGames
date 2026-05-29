@@ -1,24 +1,46 @@
 @page "/register"
-@rendermode InteractiveServer
+@using PuzzleGames.Frontend.Clients
+@using PuzzleGames.Frontend.Logic
+@using PuzzleGames.Frontend.Models
+@inject UserClient UserClient
+@inject UserSession UserSession
+@inject NavigationManager NavigationManager
 
-<div class="container">
-    <h3>Registration</h3>
-    
-    <Form>
-        <label> Name:</label>
-        <input type="text" required/>
-        
-        <label> Email:</label>
-        <input type="email" required/>
-        
-        <label> Password:</label>
-        <input type="password" required/>
-        
-        <buton type="submit"> Register </buton>
-        
-    </Form>
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <EditForm Model="@user" FormName="register" OnValidSubmit="HandleSubmitAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="mb-3">
+                <label for="username" class="form-label">Username:</label>
+                <InputText id="username" @bind-Value="user.Username" class="form-control"/>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <InputText id="email" @bind-Value="user.Email" class="form-control"/>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password:</label>
+                <InputText id="password" @bind-Value="user.Password" class="form-control"/>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+            <a role="button" class="btn btn-secondary" href="/">Cancel</a>
+        </EditForm>
+    </div>
 </div>
 
 @code {
+    RegisterUser user { get; set; } = new();
+    private RegisterLogic logic;
     
+    protected override void OnInitialized()
+    {
+        logic = new RegisterLogic(UserSession, UserClient);
+    }
+    
+    private async Task HandleSubmitAsync()
+    {
+        await logic.RegisterUserAsync(user);
+        NavigationManager.NavigateTo("/");
+    }
 }

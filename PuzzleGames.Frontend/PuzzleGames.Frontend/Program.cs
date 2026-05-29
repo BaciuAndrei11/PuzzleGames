@@ -13,6 +13,7 @@ var puzzleGamesApiUrl = builder.Configuration["PuzzleGamesApiUrl"]??
 builder.Services.AddHttpClient<UserClient>(client => client.BaseAddress = new Uri(puzzleGamesApiUrl));
 builder.Services.AddScoped<UserSession>();
 builder.Services.AddScoped<TakuzuGameLogic>();
+builder.Services.AddScoped<RegisterLogic>();
 
 var app = builder.Build();
 
