@@ -21,6 +21,14 @@ public class UserService(PuzzleGamesContext dbContext) : IUserService
         return user?.ToDto();
     }
 
+    public async Task<UserDto> GetUserByUsernameAsync(string username, string password)
+    {
+        var user = await dbContext.Users
+            .FirstOrDefaultAsync(u => u.Username == username 
+                                      && u.Password == password);
+        return user?.ToDto();
+    }
+
     public async Task<UserDto> CreateUserAsync(CreateUserDto newUser)
     {
         User user = newUser.ToEntity();

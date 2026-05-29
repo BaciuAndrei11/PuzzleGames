@@ -1,10 +1,18 @@
+using PuzzleGames.Frontend.Clients;
 using PuzzleGames.Frontend.Components;
+using PuzzleGames.Frontend.Logic;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+
+var puzzleGamesApiUrl = builder.Configuration["PuzzleGamesApiUrl"]??
+                      throw new Exception("GameStoreApiUrl is not set");
+builder.Services.AddHttpClient<UserClient>(client => client.BaseAddress = new Uri(puzzleGamesApiUrl));
+builder.Services.AddScoped<UserSession>();
+builder.Services.AddScoped<TakuzuGameLogic>();
 
 var app = builder.Build();
 

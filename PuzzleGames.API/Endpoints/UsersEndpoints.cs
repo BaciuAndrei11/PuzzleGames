@@ -10,6 +10,7 @@ namespace PuzzleGames.API.Endpoints;
 public static class UsersEndpoints
 {
     const string GetUserEndpointName = "GetUser";
+    const string GetLoggedInUserEndpointName = "GetLoggedInUser";
 
     public static RouteGroupBuilder MapUsersEndpoints(this WebApplication app)
     {
@@ -25,6 +26,13 @@ public static class UsersEndpoints
             var user = await userService.GetUserAsync(id);
             return user is null ? Results.NotFound() : Results.Ok(user);
         }).WithName(GetUserEndpointName);
+        
+        // GET /login?username=aaaa&password=1111
+        group.MapGet("/login", async (string username, string password, IUserService userService) =>
+        {
+            var user = await userService.GetUserByUsernameAsync(username, password);
+            return user is null ? Results.NotFound() : Results.Ok(user);
+        }).WithName("GetLoggedInUserEndpointName");
 
         //POST /users
         group.MapPost("/", async (CreateUserDto newUser, IUserService userService) =>

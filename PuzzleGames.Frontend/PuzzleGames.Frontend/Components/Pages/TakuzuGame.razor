@@ -1,10 +1,11 @@
 ﻿@page "/"
+@using PuzzleGames.Frontend.Clients
 @using PuzzleGames.Frontend.Logic
 @using PuzzleGames.Frontend.Models
-@using System.Timers
+@inject UserSession UserSession
+@inject UserClient UserClient
 
-@rendermode InteractiveServer
-
+<NavBar></NavBar>
 <h1 class="text-center mt-4 text-secondary">Takuzu Puzzle</h1>
 <div class="text-center text-secondary mt-2">
     <span class=" p-2 fs-5 ">
@@ -92,7 +93,7 @@
     
     protected override void OnInitialized()
     {
-        TakuzuGameLogic = new TakuzuGameLogic();
+        TakuzuGameLogic = new TakuzuGameLogic(UserSession, UserClient);
         TakuzuGameLogic.GenerateNewGame(Size);
         TakuzuGameLogic.OnTimerTicked += HandleTimerTick;
     }
@@ -106,9 +107,9 @@
         });
     }
     
-    private void HandleClick(int row, int col)
+    private async Task HandleClick(int row, int col)
     {
-        TakuzuGameLogic.ChangeCellValue(row, col);
+        await TakuzuGameLogic.ChangeCellValueAsync(row, col);
         StateHasChanged();
     }
 

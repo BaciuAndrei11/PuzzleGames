@@ -1,0 +1,55 @@
+@using PuzzleGames.Frontend.Logic
+@inject UserSession UserSession
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+<nav class="navbar navbar-expand-lg bg-secondary navbar-dark shadow-sm">
+    <div class="container-fluid px-4">
+        <div>
+            @if (!@UserSession.IsLoggedIn)
+            {
+                <a class="navbar-brand me-3" href="/login">Login</a>
+                <a class="navbar-brand" href="/register">Register</a>
+            }
+            else
+            {
+                <div class="d-flex align-items-center gap-3">
+                    <span class="navbar-text text-white fw-semibold">
+                        <i class="bi bi-person-fill me-1">@UserSession.CurrentUser.Username</i> 
+                    </span>
+
+                    <span class="badge bg-warning text-dark px-2 py-1.5 fw-bold shadow-sm">
+                        LVL @UserSession.CurrentUser.CurrentLevel
+                    </span>
+
+                    <button type="button" class="btn btn-link text-white-50 text-decoration-none p-0 ms-2 fw-medium btn-logout" @onclick="HandleLogoutAsync">
+                        <i class="bi bi-box-arrow-right">Logout</i> 
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</nav>
+@code
+{
+    protected override void OnInitialized()
+    {
+        UserSession.OnChange += OnSessionChanged;
+    }
+
+    private void OnSessionChanged()
+    {
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleLogoutAsync()
+    {
+        await UserSession.LogOutAsync();
+        NavigationManager.NavigateTo("/");
+    }
+
+    public void Dispose()
+    {
+        UserSession.OnChange -= OnSessionChanged;
+    }
+}

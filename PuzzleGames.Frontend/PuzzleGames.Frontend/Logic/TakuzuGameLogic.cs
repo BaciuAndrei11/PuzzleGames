@@ -1,3 +1,4 @@
+using PuzzleGames.Frontend.Clients;
 using PuzzleGames.Frontend.Models;
 using PuzzleGames.Frontend.Utilities;
 
@@ -5,6 +6,15 @@ namespace PuzzleGames.Frontend.Logic;
 
 public class TakuzuGameLogic
 {
+    private readonly UserSession _userSession;
+    private readonly UserClient _userClient;
+
+    // Sistemul de Dependency Injection va aduce AUTOMAT sesiunea curentă aici
+    public TakuzuGameLogic(UserSession userSession, UserClient userClient)
+    {
+        _userSession = userSession;
+        _userClient = userClient;
+    }
     public List<List<TakuzuCell>> TakuzuBoard { get; set; }
     public List<List<TakuzuCell>> GeneratedBoard { get; set; }
     public int Rows { get; set; }
@@ -50,7 +60,7 @@ public class TakuzuGameLogic
         StartTimer();
     }
 
-    public void ChangeCellValue(int row, int col)
+    public async Task ChangeCellValueAsync(int row, int col)
     {
         if(TakuzuBoard[row][col].IsFixed == true)
             return;
@@ -74,6 +84,14 @@ public class TakuzuGameLogic
         IsGameOver = TakuzuGameUtility.IsGameOver(TakuzuBoard);
         if (IsGameOver)
         {
+            if (_userSession.IsLoggedIn)
+            {
+                _userSession.CurrentUser.CurrentLevel = _userSession.CurrentUser.CurrentLevel + 1;
+                await _userClient.UpdateUserAsync(_userSession.CurrentUser);
+                
+                _userSession.NotifyStateChanged();
+            }
+
             StopTimer();
         }
         
