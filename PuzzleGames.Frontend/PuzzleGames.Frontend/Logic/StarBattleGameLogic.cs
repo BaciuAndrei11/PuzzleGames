@@ -3,12 +3,15 @@ using PuzzleGames.Frontend.Utilities;
 
 namespace PuzzleGames.Frontend.Logic;
 
-public class StarBattleLogic
+public class StarBattleGameLogic :  IGameLogic
 {
     public List<List<StarBattleCell>> StarBattleBoard { get; set; }
+    public bool IsGameOver { get; set; }
+    
 
     public void GenerateNewGame(int size)
     {
+        IsGameOver = false;
         bool isValidBoard = false;
         while (isValidBoard == false)
         {
@@ -41,6 +44,16 @@ public class StarBattleLogic
         }
     }
 
+    public int GetBoardSize()
+    {
+        return StarBattleBoard.Count;
+    }
+    
+    public string GetFormattedTime()
+    {
+        return $"";
+    }
+
     public async Task ChangeCellValueAsync(int row, int col)
     {
         switch (StarBattleBoard[row][col].Cell) 
@@ -55,6 +68,7 @@ public class StarBattleLogic
                 StarBattleBoard[row][col].Cell = StarBattleCellEnum.Empty;
                 break;
         }
+        IsGameOver = StarBattleUtility.IsGameOver(StarBattleBoard);
     }
 }
 

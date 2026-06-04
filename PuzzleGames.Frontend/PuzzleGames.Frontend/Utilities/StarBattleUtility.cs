@@ -238,9 +238,87 @@ public static class StarBattleUtility
         return changed;
     }
 
-    private static void PlaceStar(List<List<StarBattleCell>>board, int row, int col)
+    public static bool IsGameOver(List<List<StarBattleCell>> board)
+    {
+        int size = board.Count;
+
+        int totalStarsOnBoard = CountTotalStars(board);
+
+        if (totalStarsOnBoard != size)
+        {
+            return false;
+        }
+
+        for (int r = 0; r < size; r++)
+        {
+            for (int c = 0; c < size; c++)
+            {
+                if (board[r][c].Cell == StarBattleCellEnum.Star)
+                {
+                    if (HasConflicts(board, r, c))
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+    
+    private static bool HasConflicts(List<List<StarBattleCell>> board, int row, int col)
+    {
+        int size = board.Count;
+
+        for (int i = 0; i < size; i++)
+        {
+            if (i != col && board[row][i].Cell == StarBattleCellEnum.Star) return true;
+        
+            if (i != row && board[i][col].Cell == StarBattleCellEnum.Star) return true;
+        }
+
+        for (int r = row - 1; r <= row + 1; r++)
+        {
+            for (int c = col - 1; c <= col + 1; c++)
+            {
+                if (r >= 0 && r < size && c >= 0 && c < size && (r != row || c != col))
+                {
+                    if (board[r][c].Cell == StarBattleCellEnum.Star) return true;
+                }
+            }
+        }
+
+        var currentColor = board[row][col].Color;
+        for (int r = 0; r < size; r++)
+        {
+            for (int c = 0; c < size; c++)
+            {
+                if ((r != row || c != col) && board[r][c].Color == currentColor && board[r][c].Cell == StarBattleCellEnum.Star)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false; 
+    }
+    
+    public static void PlaceStar(List<List<StarBattleCell>>board, int row, int col)
     {
         board[row][col].Cell = StarBattleCellEnum.Star;
+        
+        for (int i = 0; i < board.Count; i++)
+        {
+            if (i != col && board[row][i].Cell == StarBattleCellEnum.Empty)
+            {
+                board[row][i].Cell = StarBattleCellEnum.MarkedX;
+            }
+
+            if (i != row && board[i][col].Cell == StarBattleCellEnum.Empty)
+            {
+                board[i][col].Cell = StarBattleCellEnum.MarkedX;
+            }
+        }
 
         for (int r = row - 1; r <= row + 1; r++)
         {

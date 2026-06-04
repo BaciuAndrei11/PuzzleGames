@@ -7,30 +7,30 @@
 
 <table class="table-bordered w-auto mx-auto mt-4 shadow rounded position-relative" 
        style="border-collapse: collapse; border: 3px solid #6c757d;">
-    @for (int rowIndex = 0; rowIndex < StarBattleLogic.StarBattleBoard.Count; rowIndex++)
+    @for (int rowIndex = 0; rowIndex < StarBattleGameLogic.StarBattleBoard.Count; rowIndex++)
     {
         int row = rowIndex;
         <tr>
-            @for (int colIndex = 0; colIndex < StarBattleLogic.StarBattleBoard[rowIndex].Count; colIndex++)
+            @for (int colIndex = 0; colIndex < StarBattleGameLogic.StarBattleBoard[rowIndex].Count; colIndex++)
             {
                 int col = colIndex;
                 
                 <td class="text-center align-middle position-relative shadow-sm"
                     style="width: 80px; height: 80px; cursor: pointer; user-select: none;
-                        background-color: @(StarBattleLogic.StarBattleBoard[row][col].ConvertColor());
+                        background-color: @(StarBattleGameLogic.StarBattleBoard[row][col].ConvertColor());
                         border: 1px solid #dee2e6;
                         border-top: @(row == 0 ? "3px solid #343a40" : "");
                         border-left: @(col == 0 ? "3px solid #343a40" : "");
-                        border-bottom: @(row == StarBattleLogic.StarBattleBoard.Count - 1 || StarBattleLogic.StarBattleBoard[row][col].Color != StarBattleLogic.StarBattleBoard[row + 1][col].Color ? "3px solid #343a40" : "1px solid #dee2e6");
-                        border-right: @(col == StarBattleLogic.StarBattleBoard[row].Count - 1 || StarBattleLogic.StarBattleBoard[row][col].Color != StarBattleLogic.StarBattleBoard[row][col + 1].Color ? "3px solid #343a40" : "1px solid #dee2e6");"
+                        border-bottom: @(row == StarBattleGameLogic.StarBattleBoard.Count - 1 || StarBattleGameLogic.StarBattleBoard[row][col].Color != StarBattleGameLogic.StarBattleBoard[row + 1][col].Color ? "3px solid #343a40" : "1px solid #dee2e6");
+                        border-right: @(col == StarBattleGameLogic.StarBattleBoard[row].Count - 1 || StarBattleGameLogic.StarBattleBoard[row][col].Color != StarBattleGameLogic.StarBattleBoard[row][col + 1].Color ? "3px solid #343a40" : "1px solid #dee2e6");"
                     role="button"
                     @onclick="() => HandleClick(row, col)">
 
-                    @if (StarBattleLogic.StarBattleBoard[row][col].Cell == StarBattleCellEnum.Star)
+                    @if (StarBattleGameLogic.StarBattleBoard[row][col].Cell == StarBattleCellEnum.Star)
                     {
                         <i class="bi bi-star-fill" style="font-size: 3rem;" ></i>
                     }
-                    else if (StarBattleLogic.StarBattleBoard[row][col].Cell == StarBattleCellEnum.MarkedX)
+                    else if (StarBattleGameLogic.StarBattleBoard[row][col].Cell == StarBattleCellEnum.MarkedX)
                     {
                         <i class="bi bi-x-lg" style="font-size: 3rem;"></i>
                     }
@@ -40,21 +40,25 @@
     }
 </table>
 
+@if (StarBattleGameLogic.IsGameOver)
+{
+    <FinishGame GameLogic="StarBattleGameLogic" OnNewGameGenerated="StateHasChanged" />
+}
 
 @code
 {
     private int Size = 8;
-    private StarBattleLogic StarBattleLogic = new StarBattleLogic();
+    private StarBattleGameLogic StarBattleGameLogic;
     
     protected override void OnInitialized()
     {
-        StarBattleLogic = new StarBattleLogic();
-        StarBattleLogic.GenerateNewGame(Size);
+        StarBattleGameLogic = new StarBattleGameLogic();
+        StarBattleGameLogic.GenerateNewGame(Size);
     }
     
     private async Task HandleClick(int row, int col)
     {
-        await StarBattleLogic.ChangeCellValueAsync(row, col);
+        await StarBattleGameLogic.ChangeCellValueAsync(row, col);
         StateHasChanged();
     }
 }

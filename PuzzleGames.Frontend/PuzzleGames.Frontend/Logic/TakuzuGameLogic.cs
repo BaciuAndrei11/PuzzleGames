@@ -4,7 +4,7 @@ using PuzzleGames.Frontend.Utilities;
 
 namespace PuzzleGames.Frontend.Logic;
 
-public class TakuzuGameLogic
+public class TakuzuGameLogic : IGameLogic
 {
     private readonly UserSession _userSession;
     private readonly UserClient _userClient;
@@ -30,8 +30,10 @@ public class TakuzuGameLogic
     
     public event Action? OnTimerTicked;
 
-    public string FormattedTime => 
-        $"{( _secondsElapsed / 60 ):D2}:{( _secondsElapsed % 60 ):D2}";
+    public string GetFormattedTime()
+    {
+        return $"{(_secondsElapsed / 60):D2}:{(_secondsElapsed % 60):D2}";
+    }
 
     public void GenerateNewGame(int size)
     {
@@ -58,6 +60,11 @@ public class TakuzuGameLogic
 
         GeneratedBoard = TakuzuGameUtility.CloneBoard(TakuzuBoard);
         StartTimer();
+    }
+    
+    public int GetBoardSize()
+    {
+        return TakuzuBoard.Count;
     }
 
     public async Task ChangeCellValueAsync(int row, int col)
