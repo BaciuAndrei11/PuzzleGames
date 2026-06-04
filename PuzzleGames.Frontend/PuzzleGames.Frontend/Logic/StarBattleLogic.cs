@@ -9,30 +9,36 @@ public class StarBattleLogic
 
     public void GenerateNewGame(int size)
     {
-        StarBattleBoard = new List<List<StarBattleCell>>();
-        for (int r = 0; r < size; r++)
+        bool isValidBoard = false;
+        while (isValidBoard == false)
         {
-            var row = new List<StarBattleCell>();
-            for (int c = 0; c < size; c++)
+            StarBattleBoard = new List<List<StarBattleCell>>();
+            for (int r = 0; r < size; r++)
             {
-                row.Add(new StarBattleCell(StarBattleCellEnum.Empty, (StarBattleCellColorEnum)(-1)));
+                var row = new List<StarBattleCell>();
+                for (int c = 0; c < size; c++)
+                {
+                    row.Add(new StarBattleCell(StarBattleCellEnum.Empty, (StarBattleCellColorEnum)(-1)));
+                }
+
+                StarBattleBoard.Add(row);
             }
-            StarBattleBoard.Add(row);
-        }
 
-        List<(int R, int C)> starPositions = new List<(int R, int C)>();
-        if (!StarBattleUtility.PlaceStarsBacktracking(StarBattleBoard, starPositions, 0, size))
-        {
-            GenerateNewGame(size);
-        }
+            List<(int R, int C)> starPositions = new List<(int R, int C)>();
+            if (!StarBattleUtility.PlaceStarsBacktracking(StarBattleBoard, starPositions, 0, size))
+            {
+                GenerateNewGame(size);
+            }
 
-        for (int i = 0; i < starPositions.Count; i++)
-        {
-            var pos = starPositions[i];
-            StarBattleBoard[pos.R][pos.C].Color = (StarBattleCellColorEnum)i;
-        }
+            for (int i = 0; i < starPositions.Count; i++)
+            {
+                var pos = starPositions[i];
+                StarBattleBoard[pos.R][pos.C].Color = (StarBattleCellColorEnum)i;
+            }
 
-        StarBattleUtility.ExpandRegions(StarBattleBoard, size);
+            StarBattleUtility.ExpandRegions(StarBattleBoard, size);
+            isValidBoard = StarBattleUtility.CanBeSolvedLogically(StarBattleUtility.CloneBoard(StarBattleBoard));
+        }
     }
 
     public async Task ChangeCellValueAsync(int row, int col)

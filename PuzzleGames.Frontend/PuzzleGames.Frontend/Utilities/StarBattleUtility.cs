@@ -28,7 +28,23 @@ public static class StarBattleUtility
 
         return false;
     }
-    
+
+    public static List<List<StarBattleCell>> CloneBoard(List<List<StarBattleCell>> original)
+    {
+        var clone = new List<List<StarBattleCell>>();
+        for (int r = 0; r < original.Count; r++)
+        {
+            var row = new List<StarBattleCell>();
+            for (int c = 0; c < original[r].Count; c++)
+            {
+                row.Add(new StarBattleCell(original[r][c].Cell, original[r][c].Color));
+            }
+            clone.Add(row);
+        }
+
+        return clone;
+    }
+
     private static bool IsValidStarPosition(List<(int R, int C)> starPositions, int row, int col)
     {
         foreach (var star in starPositions)
@@ -95,4 +111,168 @@ public static class StarBattleUtility
             }
         }
     }
+    
+    public static bool CanBeSolvedLogically(List<List<StarBattleCell>>board)
+    {
+        bool progressMade;
+        do
+        {
+            progressMade = false;
+
+            if (ApplyRegionRule(board)) progressMade = true;
+            if (ApplyLineRules(board)) progressMade = true;
+            if (ApplyAdvancedIntersectionRule(board)) progressMade = true;
+
+        } while (progressMade);
+
+        return CountTotalStars(board) == board.Count;
+    }
+
+    private static bool ApplyRegionRule(List<List<StarBattleCell>>board)
+    {
+        bool changed = false;
+
+        for (int colorIdx = 0; colorIdx < board.Count; colorIdx++)
+        {
+            var regionCells = GetCellsByColor(board, (StarBattleCellColorEnum)colorIdx);
+            
+            if (regionCells.Any(c => board[c.R][c.C].Cell == StarBattleCellEnum.Star))
+            {
+                foreach (var c in regionCells.Where(c => board[c.R][c.C].Cell == StarBattleCellEnum.Empty))
+                {
+                    board[c.R][c.C].Cell = StarBattleCellEnum.MarkedX;
+                    changed = true;
+                }
+                continue;
+            }
+
+            var emptyCells = regionCells.Where(c => board[c.R][c.C].Cell == StarBattleCellEnum.Empty).ToList();
+            if (emptyCells.Count == 1)
+            {
+                PlaceStar(board, emptyCells[0].R, emptyCells[0].C);
+                changed = true;
+            }
+        }
+
+        return changed;
+    }
+
+    private static bool ApplyLineRules(List<List<StarBattleCell>>board)
+    {
+        bool changed = false;
+
+        for (int i = 0; i < board.Count; i++)
+        {
+            var rowCells = Enumerable.Range(0, board.Count).Select(c => (R: i, C: c)).ToList();
+            if (ProcessLine(board, rowCells)) changed = true;
+
+            var colCells = Enumerable.Range(0, board.Count).Select(r => (R: r, C: i)).ToList();
+            if (ProcessLine(board, colCells)) changed = true;
+        }
+
+        return changed;
+    }
+
+    private static bool ProcessLine(List<List<StarBattleCell>>board, List<(int R, int C)> line)
+    {
+        bool changed = false;
+        
+        if (line.Any(pos => board[pos.R][pos.C].Cell == StarBattleCellEnum.Star))
+        {
+            foreach (var pos in line.Where(pos => board[pos.R][pos.C].Cell == StarBattleCellEnum.Empty))
+            {
+                board[pos.R][pos.C].Cell = StarBattleCellEnum.MarkedX;
+                changed = true;
+            }
+            return changed;
+        }
+
+        var empty = line.Where(pos => board[pos.R][pos.C].Cell == StarBattleCellEnum.Empty).ToList();
+        if (empty.Count == 1)
+        {
+            PlaceStar(board, empty[0].R, empty[0].C);
+            changed = true;
+        }
+
+        return changed;
+    }
+
+    private static bool ApplyAdvancedIntersectionRule(List<List<StarBattleCell>>board)
+    {
+        bool changed = false;
+
+        for (int colorIdx = 0; colorIdx < board.Count; colorIdx++)
+        {
+            var regionCells = GetCellsByColor(board, (StarBattleCellColorEnum)colorIdx)
+                .Where(pos => board[pos.R][pos.C].Cell == StarBattleCellEnum.Empty).ToList();
+
+            if (regionCells.Count == 0) continue;
+
+            int firstRow = regionCells[0].R;
+            if (regionCells.All(pos => pos.R == firstRow))
+            {
+                for (int c = 0; c < board.Count; c++)
+                {
+                    if (board[firstRow][c].Cell == StarBattleCellEnum.Empty && board[firstRow][c].Color != (StarBattleCellColorEnum)colorIdx)
+                    {
+                        board[firstRow][c].Cell = StarBattleCellEnum.MarkedX;
+                        changed = true;
+                    }
+                }
+            }
+
+            int firstCol = regionCells[0].C;
+            if (regionCells.All(pos => pos.C == firstCol))
+            {
+                for (int r = 0; r < board.Count; r++)
+                {
+                    if (board[r][firstCol].Cell == StarBattleCellEnum.Empty && board[r][firstCol].Color != (StarBattleCellColorEnum)colorIdx)
+                    {
+                        board[r][firstCol].Cell = StarBattleCellEnum.MarkedX;
+                        changed = true;
+                    }
+                }
+            }
+        }
+
+        return changed;
+    }
+
+    private static void PlaceStar(List<List<StarBattleCell>>board, int row, int col)
+    {
+        board[row][col].Cell = StarBattleCellEnum.Star;
+
+        for (int r = row - 1; r <= row + 1; r++)
+        {
+            for (int c = col - 1; c <= col + 1; c++)
+            {
+                if (r >= 0 && r < board.Count && c >= 0 && c < board.Count && (r != row || c != col))
+                {
+                    if (board[r][c].Cell == StarBattleCellEnum.Empty)
+                    {
+                        board[r][c].Cell = StarBattleCellEnum.MarkedX;
+                    }
+                }
+            }
+        }
+    }
+
+    private static List<(int R, int C)> GetCellsByColor(List<List<StarBattleCell>>board, StarBattleCellColorEnum color)
+    {
+        var cells = new List<(int R, int C)>();
+        for (int r = 0; r < board.Count; r++)
+        {
+            for (int c = 0; c < board.Count; c++)
+            {
+                if (board[r][c].Color == color) cells.Add((r, c));
+            }
+        }
+        return cells;
+    }
+
+    private static int CountTotalStars(List<List<StarBattleCell>>board)
+    {
+        return board.Sum(row => row.Count(c => c.Cell == StarBattleCellEnum.Star));
+    }
+    
 }
