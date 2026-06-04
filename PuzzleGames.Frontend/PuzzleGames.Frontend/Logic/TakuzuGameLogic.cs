@@ -30,9 +30,12 @@ public class TakuzuGameLogic : IGameLogic
     
     public event Action? OnTimerTicked;
 
+    public string FormattedTime => 
+        $"{( _secondsElapsed / 60 ):D2}:{( _secondsElapsed % 60 ):D2}";
+
     public string GetFormattedTime()
     {
-        return $"{(_secondsElapsed / 60):D2}:{(_secondsElapsed % 60):D2}";
+        return FormattedTime;
     }
 
     public void GenerateNewGame(int size)

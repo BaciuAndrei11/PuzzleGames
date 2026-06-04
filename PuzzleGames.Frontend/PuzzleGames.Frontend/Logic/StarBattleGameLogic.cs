@@ -8,7 +8,19 @@ public class StarBattleGameLogic :  IGameLogic
     public List<List<StarBattleCell>> StarBattleBoard { get; set; }
     public bool IsGameOver { get; set; }
     
+    private System.Timers.Timer? _timer;
+    private int _secondsElapsed = 0;
+    
+    public event Action? OnTimerTicked;
 
+    public string FormattedTime => 
+        $"{( _secondsElapsed / 60 ):D2}:{( _secondsElapsed % 60 ):D2}";
+
+    public string GetFormattedTime()
+    {
+        return FormattedTime;
+    }
+    
     public void GenerateNewGame(int size)
     {
         IsGameOver = false;
@@ -41,17 +53,14 @@ public class StarBattleGameLogic :  IGameLogic
 
             StarBattleUtility.ExpandRegions(StarBattleBoard, size);
             isValidBoard = StarBattleUtility.CanBeSolvedLogically(StarBattleUtility.CloneBoard(StarBattleBoard));
+            
+            StartTimer();
         }
     }
 
     public int GetBoardSize()
     {
         return StarBattleBoard.Count;
-    }
-    
-    public string GetFormattedTime()
-    {
-        return $"";
     }
 
     public async Task ChangeCellValueAsync(int row, int col)
@@ -69,6 +78,35 @@ public class StarBattleGameLogic :  IGameLogic
                 break;
         }
         IsGameOver = StarBattleUtility.IsGameOver(StarBattleBoard);
+        if (IsGameOver)
+        {
+            StopTimer();
+        }
     }
+    
+    public void StartTimer()
+    {
+        _timer?.Stop();
+        _timer?.Dispose();
+
+        _secondsElapsed = 0;
+        _timer = new System.Timers.Timer(1000);
+        _timer.Elapsed += (sender, e) =>
+        {
+            if (IsGameOver)
+            {
+                _timer?.Stop();
+            }
+            else
+            {
+                _secondsElapsed++;
+                OnTimerTicked?.Invoke();
+            }
+        };
+        _timer.AutoReset = true;
+        _timer.Start();
+    }
+
+    public void StopTimer() => _timer?.Stop();
 }
 

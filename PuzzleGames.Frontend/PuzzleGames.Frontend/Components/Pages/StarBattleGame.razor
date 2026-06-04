@@ -4,7 +4,11 @@
 
 <NavBar> </NavBar>
 <h1 class="text-center mt-4 text-secondary">Star Battle Puzzle</h1>
-
+<div class="text-center text-secondary mt-2">
+    <span class=" p-2 fs-5 ">
+        @StarBattleGameLogic.GetFormattedTime()
+    </span>
+</div>
 <table class="table-bordered w-auto mx-auto mt-4 shadow rounded position-relative" 
        style="border-collapse: collapse; border: 3px solid #6c757d;">
     @for (int rowIndex = 0; rowIndex < StarBattleGameLogic.StarBattleBoard.Count; rowIndex++)
@@ -47,13 +51,22 @@
 
 @code
 {
-    private int Size = 8;
+    private int Size = 6;
     private StarBattleGameLogic StarBattleGameLogic;
     
     protected override void OnInitialized()
     {
         StarBattleGameLogic = new StarBattleGameLogic();
         StarBattleGameLogic.GenerateNewGame(Size);
+    }
+    
+    private void HandleTimerTick()
+    {
+        
+        _ = InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
     }
     
     private async Task HandleClick(int row, int col)
