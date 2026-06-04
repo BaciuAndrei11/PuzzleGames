@@ -1,4 +1,46 @@
 @page "/StarBattle"
+@using PuzzleGames.Frontend.Logic
+@using PuzzleGames.Frontend.Models
 
 <NavBar> </NavBar>
 <h1 class="text-center mt-4 text-secondary">Star Battle Puzzle</h1>
+
+<table class="table-bordered w-auto mx-auto mt-4 shadow rounded position-relative" 
+       style="border-collapse: collapse; border: 3px solid #6c757d;">
+    @for (int rowIndex = 0; rowIndex < StarBattleLogic.StarBattleBoard.Count; rowIndex++)
+    {
+        int row = rowIndex;
+        <tr>
+            @for (int colIndex = 0; colIndex < StarBattleLogic.StarBattleBoard[rowIndex].Count; colIndex++)
+            {
+                int col = colIndex;
+                
+                <td class="text-center align-middle position-relative shadow-sm"
+                    style="width: 80px; height: 80px; cursor: pointer; user-select: none;
+                        background-color: @(StarBattleLogic.StarBattleBoard[row][col].ConvertColor());
+                        border: 1px solid #dee2e6;
+                        border-top: @(row == 0 ? "3px solid #343a40" : "");
+                        border-left: @(col == 0 ? "3px solid #343a40" : "");
+                        border-bottom: @(row == StarBattleLogic.StarBattleBoard.Count - 1 || StarBattleLogic.StarBattleBoard[row][col].Color != StarBattleLogic.StarBattleBoard[row + 1][col].Color ? "3px solid #343a40" : "1px solid #dee2e6");
+                        border-right: @(col == StarBattleLogic.StarBattleBoard[row].Count - 1 || StarBattleLogic.StarBattleBoard[row][col].Color != StarBattleLogic.StarBattleBoard[row][col + 1].Color ? "3px solid #343a40" : "1px solid #dee2e6");"
+                    role="button">
+
+                    @if (StarBattleLogic.StarBattleBoard[row][col].Cell == StarBattleCellEnum.Star)
+                    {
+                        <i class="bi bi-star-fill" style="font-size: 3rem;" ></i>
+                    }
+                    else if (StarBattleLogic.StarBattleBoard[row][col].Cell == StarBattleCellEnum.MarkedX)
+                    {
+                        <i class="bi bi-x-lg" style="font-size: 3rem;"></i>
+                    }
+                </td>
+            }
+        </tr>
+    }
+</table>
+
+
+@code
+{
+    StarBattleLogic StarBattleLogic = new StarBattleLogic();
+}

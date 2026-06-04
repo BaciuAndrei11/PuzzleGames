@@ -1,0 +1,16 @@
+using PuzzleGames.Frontend.Models;
+
+namespace PuzzleGames.Frontend.Logic;
+
+public class StarBattleLogic
+{
+    public List<List<StarBattleCell>> StarBattleBoard = new List<List<StarBattleCell>>
+    {
+        new List<StarBattleCell>{ new StarBattleCell(StarBattleCellEnum.MarkedX, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red) },
+        new List<StarBattleCell>{ new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Orange), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red) },
+        new List<StarBattleCell>{ new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Yellow), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red) },
+        new List<StarBattleCell>{ new StarBattleCell(StarBattleCellEnum.Star, StarBattleCellColorEnum.Green), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red) },
+        new List<StarBattleCell>{ new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Blue), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red) },
+        new List<StarBattleCell>{ new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Purple), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red), new StarBattleCell(StarBattleCellEnum.Empty, StarBattleCellColorEnum.Red) },
+    };
+}
