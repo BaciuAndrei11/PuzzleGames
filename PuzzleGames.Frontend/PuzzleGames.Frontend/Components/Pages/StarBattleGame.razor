@@ -23,7 +23,8 @@
                         border-left: @(col == 0 ? "3px solid #343a40" : "");
                         border-bottom: @(row == StarBattleLogic.StarBattleBoard.Count - 1 || StarBattleLogic.StarBattleBoard[row][col].Color != StarBattleLogic.StarBattleBoard[row + 1][col].Color ? "3px solid #343a40" : "1px solid #dee2e6");
                         border-right: @(col == StarBattleLogic.StarBattleBoard[row].Count - 1 || StarBattleLogic.StarBattleBoard[row][col].Color != StarBattleLogic.StarBattleBoard[row][col + 1].Color ? "3px solid #343a40" : "1px solid #dee2e6");"
-                    role="button">
+                    role="button"
+                    @onclick="() => HandleClick(row, col)">
 
                     @if (StarBattleLogic.StarBattleBoard[row][col].Cell == StarBattleCellEnum.Star)
                     {
@@ -42,5 +43,18 @@
 
 @code
 {
-    StarBattleLogic StarBattleLogic = new StarBattleLogic();
+    private int Size = 8;
+    private StarBattleLogic StarBattleLogic = new StarBattleLogic();
+    
+    protected override void OnInitialized()
+    {
+        StarBattleLogic = new StarBattleLogic();
+        StarBattleLogic.GenerateNewGame(Size);
+    }
+    
+    private async Task HandleClick(int row, int col)
+    {
+        await StarBattleLogic.ChangeCellValueAsync(row, col);
+        StateHasChanged();
+    }
 }

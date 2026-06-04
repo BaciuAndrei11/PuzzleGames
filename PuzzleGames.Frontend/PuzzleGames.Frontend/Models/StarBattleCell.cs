@@ -12,27 +12,17 @@ public class StarBattleCell
 
     public string ConvertColor()
     {
-        switch (Color)
+        return Color switch
         {
-            case StarBattleCellColorEnum.Red:
-                return "#FF0000";
-            case StarBattleCellColorEnum.Orange:
-                return "#FFA500";
-            case StarBattleCellColorEnum.Yellow:
-                return "#FFFF00";
-            case StarBattleCellColorEnum.Green:
-                return "#00FF00";
-            case StarBattleCellColorEnum.Blue:
-                return "#0000FF";
-            case StarBattleCellColorEnum.Purple:
-                return "#8F00FF";
-            case StarBattleCellColorEnum.Gray:
-                return "#808080";
-            case StarBattleCellColorEnum.Pink:
-                return "#FFC0CB";
-            default:
-                return "";
-                
-        }
+            StarBattleCellColorEnum.Red => "#FF6B6B",
+            StarBattleCellColorEnum.Orange => "#FF9F43",
+            StarBattleCellColorEnum.Yellow => "#FECA57",
+            StarBattleCellColorEnum.Green => "#1DD1A1",
+            StarBattleCellColorEnum.Blue => "#54A0FF",
+            StarBattleCellColorEnum.Purple => "#5F27CD",
+            StarBattleCellColorEnum.Gray => "#A4B0BE",
+            StarBattleCellColorEnum.Pink => "#FF9FF3",
+            _ => "#FFFFFF" 
+        };
     }
 }
