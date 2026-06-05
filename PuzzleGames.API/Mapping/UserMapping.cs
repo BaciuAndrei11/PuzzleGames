@@ -13,7 +13,6 @@ public static class UserMapping
             Username = userDto.Username,
             Email = userDto.Email,
             Password = BCrypt.HashPassword(userDto.Password),
-            CurrentLevel = 1
         };
     }
     
@@ -25,7 +24,6 @@ public static class UserMapping
             Username = userDto.Username,
             Email = userDto.Email,
             Password = userDto.Password,
-            CurrentLevel = userDto.CurrentLevel
         };
     }
 
@@ -36,7 +34,10 @@ public static class UserMapping
             user.Username,
             user.Email,
             user.Password,
-            user.CurrentLevel
+            user.GameProgresses.Select(p => new GamesProgressDto(
+                p.Id,
+                p.GameType,
+                p.CurrentLevel))
         );
     }
 }

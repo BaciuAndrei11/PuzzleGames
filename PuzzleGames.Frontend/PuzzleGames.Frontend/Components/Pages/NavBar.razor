@@ -1,4 +1,5 @@
 @using PuzzleGames.Frontend.Logic
+@using PuzzleGames.Frontend.Models
 @inject UserSession UserSession
 @inject NavigationManager NavigationManager
 @implements IDisposable
@@ -43,7 +44,7 @@
                     </span>
 
                     <span class="badge bg-warning text-dark px-2 py-1.5 fw-bold shadow-sm">
-                        LVL @UserSession.CurrentUser?.CurrentLevel
+                        LVL @GetActiveGameLevel()
                     </span>
 
                     <button type="button" class="btn btn-link text-white-50 text-decoration-none p-0 ms-2 fw-medium btn-logout" @onclick="HandleLogoutAsync">
@@ -78,5 +79,22 @@
     public void Dispose()
     {
         UserSession.OnChange -= OnSessionChanged;
+    }
+    
+    private int GetActiveGameLevel()
+    {
+        if (UserSession.CurrentUser is null) return 1;
+
+        var currentUri = NavigationManager.Uri;
+
+        if (currentUri.Contains("StarBattle", StringComparison.OrdinalIgnoreCase))
+        {
+            return UserSession.CurrentUser.GetLevelFor(GameType.StarBattle);
+        }
+        else
+        {
+            return UserSession.CurrentUser.GetLevelFor(GameType.Takuzu);
+        }
+        
     }
 }

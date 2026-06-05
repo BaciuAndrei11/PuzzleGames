@@ -4,6 +4,7 @@ using PuzzleGames.API.Dtos;
 using PuzzleGames.API.Entities;
 using PuzzleGames.API.Mapping;
 using BCryptNet;
+using PuzzleGames.API.Enums;
 
 namespace PuzzleGames.API.Services;
 
@@ -25,6 +26,7 @@ public class UserService(PuzzleGamesContext dbContext) : IUserService
     public async Task<UserDto> GetUserByUsernameAsync(LoginUserDto loginUser)
     {
         var user = await dbContext.Users
+            .Include(u => u.GameProgresses)
             .FirstOrDefaultAsync(u => u.Username == loginUser.Username);
         bool isPasswordCorrect = BCrypt.Verify(loginUser.Password, user.Password);
         
@@ -39,7 +41,9 @@ public class UserService(PuzzleGamesContext dbContext) : IUserService
     public async Task<UserDto> CreateUserAsync(CreateUserDto newUser)
     {
         User user = newUser.ToEntity();
-            
+        user.GameProgresses.Add(new UserGameProgress{GameType = GameType.Takuzu, CurrentLevel = 1});
+        user.GameProgresses.Add( new UserGameProgress{GameType = GameType.StarBattle, CurrentLevel = 1});
+        
         dbContext.Users.Add(user);
         await dbContext.SaveChangesAsync();
 
@@ -54,7 +58,6 @@ public class UserService(PuzzleGamesContext dbContext) : IUserService
             dbContext.Entry(existingUser).CurrentValues.SetValues(updatedUser.ToEntity(id));
             await dbContext.SaveChangesAsync();
         }
-       
     }
 
     public async Task DeleteUserAsync(int id)

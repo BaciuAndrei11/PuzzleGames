@@ -1,6 +1,9 @@
 @page "/StarBattle"
+@using PuzzleGames.Frontend.Clients
 @using PuzzleGames.Frontend.Logic
 @using PuzzleGames.Frontend.Models
+@inject UserSession UserSession
+@inject UserClient UserClient
 
 <NavBar> </NavBar>
 <h1 class="text-center mt-4 text-secondary">Star Battle Puzzle</h1>
@@ -63,12 +66,12 @@
 
 @code
 {
-    private int Size = 8;
+    private int Size = 6;
     private StarBattleGameLogic StarBattleGameLogic;
     
     protected override void OnInitialized()
     {
-        StarBattleGameLogic = new StarBattleGameLogic();
+        StarBattleGameLogic = new StarBattleGameLogic(UserSession,UserClient);
         StarBattleGameLogic.GenerateNewGame(Size);
         StarBattleGameLogic.OnTimerTicked += HandleTimerTick;
     }

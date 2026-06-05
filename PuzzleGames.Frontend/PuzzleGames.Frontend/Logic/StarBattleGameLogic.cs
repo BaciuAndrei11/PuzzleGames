@@ -1,3 +1,4 @@
+using PuzzleGames.Frontend.Clients;
 using PuzzleGames.Frontend.Models;
 using PuzzleGames.Frontend.Utilities;
 
@@ -18,6 +19,15 @@ public class StarBattleGameLogic :  IGameLogic
     private int _secondsElapsed = 0;
     
     public event Action? OnTimerTicked;
+    
+    private readonly UserSession _userSession;
+    private readonly UserClient _userClient;
+
+    public StarBattleGameLogic(UserSession userSession, UserClient userClient)
+    {
+        _userSession = userSession;
+        _userClient = userClient;
+    }
 
     public string FormattedTime => 
         $"{( _secondsElapsed / 60 ):D2}:{( _secondsElapsed % 60 ):D2}";
@@ -106,6 +116,18 @@ public class StarBattleGameLogic :  IGameLogic
         IsGameOver = StarBattleUtility.IsGameOver(StarBattleBoard);
         if (IsGameOver)
         {
+            if (_userSession.IsLoggedIn)
+            {
+                var currentProgress = _userSession.CurrentUser?.GameProgresses
+                    .FirstOrDefault(p => p.GameType == GameType.StarBattle);
+                
+                var progress = new UpdateProgress(PuzzleGames.API.Enums.GameType.StarBattle, currentProgress.CurrentLevel++);
+                
+                await _userClient.UpdateGameProgressAsync(_userSession.CurrentUser.Id, progress);
+                
+                _userSession.NotifyStateChanged();
+            }
+            
             StopTimer();
         }
         

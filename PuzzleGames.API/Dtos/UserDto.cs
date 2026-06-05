@@ -5,4 +5,4 @@ public record UserDto(
     string Username,
     string Email,
     string Password,
-    int CurrentLevel);
+    IEnumerable<GamesProgressDto> GameProgresses);

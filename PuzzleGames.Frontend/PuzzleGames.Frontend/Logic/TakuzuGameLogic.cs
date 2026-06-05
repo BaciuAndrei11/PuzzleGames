@@ -96,8 +96,12 @@ public class TakuzuGameLogic : IGameLogic
         {
             if (_userSession.IsLoggedIn)
             {
-                _userSession.CurrentUser.CurrentLevel = _userSession.CurrentUser.CurrentLevel + 1;
-                await _userClient.UpdateUserAsync(_userSession.CurrentUser);
+                var currentProgress = _userSession.CurrentUser?.GameProgresses
+                    .FirstOrDefault(p => p.GameType == GameType.Takuzu);
+                
+                var progress = new UpdateProgress(PuzzleGames.API.Enums.GameType.Takuzu, currentProgress.CurrentLevel++);
+                
+                await _userClient.UpdateGameProgressAsync(_userSession.CurrentUser.Id, progress);
                 
                 _userSession.NotifyStateChanged();
             }

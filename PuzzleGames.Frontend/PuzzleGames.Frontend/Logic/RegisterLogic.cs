@@ -21,7 +21,6 @@ public class RegisterLogic
             Username = registerUser.Username,
             Password = registerUser.Password,
             Email = registerUser.Email,
-            CurrentLevel = 1
         };
         await _userClient.AddUserAsync(newUser);
         _userSesion.CurrentUser = newUser;
