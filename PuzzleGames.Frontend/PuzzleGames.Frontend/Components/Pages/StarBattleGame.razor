@@ -22,8 +22,8 @@
                 <td class="text-center align-middle position-relative shadow-sm"
                     style="width: 80px; height: 80px; cursor: pointer; user-select: none;
                         background: @(!StarBattleGameLogic.StarBattleBoard[row][col].IsValid
-                                    ? $"repeating-linear-gradient(45deg, rgba(220, 53, 69, 0.25), rgba(220, 53, 69, 0.25) 10px, transparent 10px, transparent 20px), {StarBattleGameLogic.StarBattleBoard[row][col].ConvertColor()}"
-                                    : StarBattleGameLogic.StarBattleBoard[row][col].ConvertColor());
+                                        ? $"repeating-linear-gradient(45deg, rgba(220, 53, 69, 0.25), rgba(220, 53, 69, 0.25) 10px, transparent 10px, transparent 20px), {StarBattleGameLogic.StarBattleBoard[row][col].ConvertColor()}"
+                                        : StarBattleGameLogic.StarBattleBoard[row][col].ConvertColor());
                         border: 1px solid #dee2e6;
                         border-top: @(row == 0 ? "3px solid #343a40" : "");
                         border-left: @(col == 0 ? "3px solid #343a40" : "");
@@ -45,6 +45,16 @@
         </tr>
     }
 </table>
+
+<div class="d-flex justify-content-center gap-1 mt-4">
+    <button type="button" class="btn btn-secondary" @onclick="Undo" disabled="@(!StarBattleGameLogic.CanUndo)">
+        <i class="bi bi-arrow-counterclockwise"></i>
+    </button>
+    <button type="button" class="btn btn-secondary" @onclick="Redo" disabled="@(!StarBattleGameLogic.CanRedo)">
+        <i class="bi bi-arrow-clockwise"></i>
+    </button>
+    <button type="button" class="btn btn-secondary" @onclick="ResetClick">Reset</button>
+</div>
 
 @if (StarBattleGameLogic.IsGameOver)
 {
@@ -74,6 +84,24 @@
     private async Task HandleClick(int row, int col)
     {
         await StarBattleGameLogic.ChangeCellValueAsync(row, col);
+        StateHasChanged();
+    }
+    
+    private void ResetClick()
+    {
+        StarBattleGameLogic.ResetBoard();
+        StateHasChanged();
+    }
+
+    private void Undo()
+    {
+        StarBattleGameLogic.Undo();
+        StateHasChanged();
+    }
+    
+    private void Redo()
+    {
+        StarBattleGameLogic.Redo();
         StateHasChanged();
     }
 }

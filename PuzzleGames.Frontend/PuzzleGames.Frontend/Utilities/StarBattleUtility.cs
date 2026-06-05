@@ -303,7 +303,7 @@ public static class StarBattleUtility
         return false; 
     }
     
-    public static void CheckForConflicts(List<List<StarBattleCell>> board)
+    public static void ValidateBoard(List<List<StarBattleCell>> board)
     {
         int size = board.Count;
 

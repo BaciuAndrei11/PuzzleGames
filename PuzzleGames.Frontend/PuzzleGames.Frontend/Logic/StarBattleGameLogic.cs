@@ -6,7 +6,13 @@ namespace PuzzleGames.Frontend.Logic;
 public class StarBattleGameLogic :  IGameLogic
 {
     public List<List<StarBattleCell>> StarBattleBoard { get; set; }
+    public List<List<StarBattleCell>> GeneratedBoard { get; set; }
     public bool IsGameOver { get; set; }
+    
+    private Stack<MoveAction> _undoStack = new Stack<MoveAction>();
+    private Stack<MoveAction> _redoStack = new Stack<MoveAction>();
+    public bool CanUndo => _undoStack.Count > 0;
+    public bool CanRedo => _redoStack.Count > 0;
     
     private System.Timers.Timer? _timer;
     private int _secondsElapsed = 0;
@@ -23,6 +29,9 @@ public class StarBattleGameLogic :  IGameLogic
     
     public void GenerateNewGame(int size)
     {
+        _undoStack.Clear();
+        _redoStack.Clear();
+        
         IsGameOver = false;
         bool isValidBoard = false;
         while (isValidBoard == false)
@@ -54,6 +63,8 @@ public class StarBattleGameLogic :  IGameLogic
             StarBattleUtility.ExpandRegions(StarBattleBoard, size);
             isValidBoard = StarBattleUtility.CanBeSolvedLogically(StarBattleUtility.CloneBoard(StarBattleBoard));
             
+            GeneratedBoard = StarBattleUtility.CloneBoard(StarBattleBoard);
+            
             StartTimer();
         }
     }
@@ -62,9 +73,18 @@ public class StarBattleGameLogic :  IGameLogic
     {
         return StarBattleBoard.Count;
     }
+    
+    public void ResetBoard()
+    {
+        StarBattleBoard = StarBattleUtility.CloneBoard(GeneratedBoard);
+        _undoStack.Clear();
+        _redoStack.Clear();
+    }
 
     public async Task ChangeCellValueAsync(int row, int col)
     {
+        var previousValue = StarBattleBoard[row][col].Cell;
+
         switch (StarBattleBoard[row][col].Cell) 
         {   
             case StarBattleCellEnum.Empty:
@@ -82,12 +102,63 @@ public class StarBattleGameLogic :  IGameLogic
                 StarBattleBoard[row][col].IsPlacedByUser = false;
                 break;
         }
-        StarBattleUtility.CheckForConflicts(StarBattleBoard);
+        StarBattleUtility.ValidateBoard(StarBattleBoard);
         IsGameOver = StarBattleUtility.IsGameOver(StarBattleBoard);
         if (IsGameOver)
         {
             StopTimer();
         }
+        
+        var newValue = StarBattleBoard[row][col].Cell;
+        _undoStack.Push(new MoveAction
+        {
+            Row = row,
+            Col = col,
+            PreviousValue = (int)previousValue,
+            NewValue = (int)newValue
+        });
+
+        _redoStack.Clear();
+    }
+    
+    public void Undo()
+    {
+        if (!CanUndo) 
+            return;
+
+        var lastMove = _undoStack.Pop();
+        _redoStack.Push(lastMove);
+
+        StarBattleBoard[lastMove.Row][lastMove.Col].Cell = (StarBattleCellEnum)lastMove.PreviousValue;
+        if (StarBattleBoard[lastMove.Row][lastMove.Col].Cell == StarBattleCellEnum.Star)
+        {
+            StarBattleUtility.PlaceStar(StarBattleBoard, lastMove.Row, lastMove.Col);
+        }
+        else
+        {
+            StarBattleUtility.ClearStar(StarBattleBoard, lastMove.Row, lastMove.Col);
+        }
+        StarBattleUtility.ValidateBoard(StarBattleBoard);
+    }
+
+    public void Redo()
+    {
+        if (!CanRedo) 
+            return;
+
+        var nextMove = _redoStack.Pop();
+        _undoStack.Push(nextMove);
+
+        StarBattleBoard[nextMove.Row][nextMove.Col].Cell = (StarBattleCellEnum)nextMove.NewValue;
+        if (StarBattleBoard[nextMove.Row][nextMove.Col].Cell == StarBattleCellEnum.Star)
+        {
+            StarBattleUtility.PlaceStar(StarBattleBoard, nextMove.Row, nextMove.Col);
+        }
+        else
+        {
+            StarBattleUtility.ClearStar(StarBattleBoard, nextMove.Row, nextMove.Col);
+        }
+        StarBattleUtility.ValidateBoard(StarBattleBoard);
     }
     
     public void StartTimer()

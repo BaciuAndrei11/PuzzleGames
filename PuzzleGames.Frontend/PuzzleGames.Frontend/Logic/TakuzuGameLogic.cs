@@ -110,8 +110,8 @@ public class TakuzuGameLogic : IGameLogic
         {
             Row = row,
             Col = col,
-            PreviousValue = previousValue,
-            NewValue = newValue
+            PreviousValue = (int)previousValue,
+            NewValue = (int)newValue
         });
 
         _redoStack.Clear();
@@ -132,7 +132,7 @@ public class TakuzuGameLogic : IGameLogic
         var lastMove = _undoStack.Pop();
         _redoStack.Push(lastMove);
 
-        TakuzuBoard[lastMove.Row][lastMove.Col].Cell = lastMove.PreviousValue;
+        TakuzuBoard[lastMove.Row][lastMove.Col].Cell = (TakuzuCellEnum)lastMove.PreviousValue;
 
         TakuzuGameUtility.ValidateBoard(TakuzuBoard);
     }
@@ -145,7 +145,7 @@ public class TakuzuGameLogic : IGameLogic
         var nextMove = _redoStack.Pop();
         _undoStack.Push(nextMove);
 
-        TakuzuBoard[nextMove.Row][nextMove.Col].Cell = nextMove.NewValue;
+        TakuzuBoard[nextMove.Row][nextMove.Col].Cell = (TakuzuCellEnum)nextMove.NewValue;
 
         TakuzuGameUtility.ValidateBoard(TakuzuBoard);
     }
