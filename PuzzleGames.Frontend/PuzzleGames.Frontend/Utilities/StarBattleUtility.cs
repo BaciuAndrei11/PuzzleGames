@@ -335,6 +335,36 @@ public static class StarBattleUtility
         }
     }
 
+    public static void ClearStar(List<List<StarBattleCell>> board, int row, int col)
+    {
+        for (int i = 0; i < board.Count; i++)
+        {
+            if (i != col && board[row][i].Cell == StarBattleCellEnum.MarkedX && board[row][i].IsPlecedByUser == false)
+            {
+                board[row][i].Cell = StarBattleCellEnum.Empty;
+            }
+            if (i != row && board[i][col].Cell == StarBattleCellEnum.MarkedX && board[i][col].IsPlecedByUser == false)
+            {
+                board[i][col].Cell = StarBattleCellEnum.Empty;
+            }
+        }
+        
+        for (int r = row - 1; r <= row + 1; r++)
+        {
+            for (int c = col - 1; c <= col + 1; c++)
+            {
+                if (r >= 0 && r < board.Count && c >= 0 && c < board.Count && (r != row || c != col) && board[r][c].IsPlecedByUser == false)
+                {
+                    if (board[r][c].Cell == StarBattleCellEnum.MarkedX)
+                    {
+                        board[r][c].Cell = StarBattleCellEnum.Empty;
+                    }
+                }
+            }
+        }
+        
+    }
+
     private static List<(int R, int C)> GetCellsByColor(List<List<StarBattleCell>>board, StarBattleCellColorEnum color)
     {
         var cells = new List<(int R, int C)>();

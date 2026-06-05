@@ -69,12 +69,17 @@ public class StarBattleGameLogic :  IGameLogic
         {   
             case StarBattleCellEnum.Empty:
                 StarBattleBoard[row][col].Cell = StarBattleCellEnum.MarkedX;
+                StarBattleBoard[row][col].IsPlecedByUser = true;
                 break;
             case StarBattleCellEnum.MarkedX:
                 StarBattleBoard[row][col].Cell = StarBattleCellEnum.Star;
-                break;
+                StarBattleUtility.PlaceStar(StarBattleBoard, row, col);
+                StarBattleBoard[row][col].IsPlecedByUser = true;
+                break; 
             case StarBattleCellEnum.Star:
                 StarBattleBoard[row][col].Cell = StarBattleCellEnum.Empty;
+                StarBattleUtility.ClearStar(StarBattleBoard, row, col);
+                StarBattleBoard[row][col].IsPlecedByUser = false;
                 break;
         }
         IsGameOver = StarBattleUtility.IsGameOver(StarBattleBoard);
