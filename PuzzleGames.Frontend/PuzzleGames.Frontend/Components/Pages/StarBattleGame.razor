@@ -63,13 +63,14 @@
 
 @code
 {
-    private int Size = 6;
+    private int Size = 8;
     private StarBattleGameLogic StarBattleGameLogic;
     
     protected override void OnInitialized()
     {
         StarBattleGameLogic = new StarBattleGameLogic();
         StarBattleGameLogic.GenerateNewGame(Size);
+        StarBattleGameLogic.OnTimerTicked += HandleTimerTick;
     }
     
     private void HandleTimerTick()
