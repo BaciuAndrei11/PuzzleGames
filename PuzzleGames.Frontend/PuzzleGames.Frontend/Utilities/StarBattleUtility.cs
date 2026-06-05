@@ -303,6 +303,76 @@ public static class StarBattleUtility
         return false; 
     }
     
+    public static void CheckForConflicts(List<List<StarBattleCell>> board)
+    {
+        int size = board.Count;
+
+        for (int r = 0; r < size; r++)
+        {
+            for (int c = 0; c < size; c++)
+            {
+                board[r][c].IsValid = true;
+            }
+        }
+
+        for (int r = 0; r < size; r++)
+        {
+            for (int c = 0; c < size; c++)
+            {
+                if (board[r][c].Cell == StarBattleCellEnum.Star && HasConflicts(board, r, c))
+                {
+                    if (board[r].Count(cell => cell.Cell == StarBattleCellEnum.Star) > 1)
+                    {
+                        for (int i = 0; i < size; i++) board[r][i].IsValid = false;
+                    }
+                    
+                    int starsInCol = 0;
+                    for (int i = 0; i < size; i++) if (board[i][c].Cell == StarBattleCellEnum.Star) starsInCol++;
+                        if (starsInCol > 1)
+                        {
+                            for (int i = 0; i < size; i++) board[i][c].IsValid = false;
+                        }
+                        
+                    var currentColor = board[r][c].Color;
+                    int starsInRegion = 0;
+                    for (int i = 0; i < size; i++)
+                    {
+                        for (int j = 0; j < size; j++)
+                        {
+                            if (board[i][j].Color == currentColor && board[i][j].Cell == StarBattleCellEnum.Star)
+                                starsInRegion++;
+                        }
+                    }
+                    if (starsInRegion > 1)
+                    {
+                        for (int i = 0; i < size; i++)
+                        {
+                            for (int j = 0; j < size; j++)
+                            {
+                                if (board[i][j].Color == currentColor) board[i][j].IsValid = false;
+                            }
+                        }
+                    }
+
+                    for (int nR = r - 1; nR <= r + 1; nR++)
+                    {
+                        for (int nC = c - 1; nC <= c + 1; nC++)
+                        {
+                            if (nR >= 0 && nR < size && nC >= 0 && nC < size && (nR != r || nC != c))
+                            {
+                                if (board[nR][nC].Cell == StarBattleCellEnum.Star)
+                                {
+                                    board[r][c].IsValid = false;
+                                    board[nR][nC].IsValid = false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     public static void PlaceStar(List<List<StarBattleCell>>board, int row, int col)
     {
         board[row][col].Cell = StarBattleCellEnum.Star;
@@ -339,11 +409,11 @@ public static class StarBattleUtility
     {
         for (int i = 0; i < board.Count; i++)
         {
-            if (i != col && board[row][i].Cell == StarBattleCellEnum.MarkedX && board[row][i].IsPlecedByUser == false)
+            if (i != col && board[row][i].Cell == StarBattleCellEnum.MarkedX && board[row][i].IsPlacedByUser == false)
             {
                 board[row][i].Cell = StarBattleCellEnum.Empty;
             }
-            if (i != row && board[i][col].Cell == StarBattleCellEnum.MarkedX && board[i][col].IsPlecedByUser == false)
+            if (i != row && board[i][col].Cell == StarBattleCellEnum.MarkedX && board[i][col].IsPlacedByUser == false)
             {
                 board[i][col].Cell = StarBattleCellEnum.Empty;
             }
@@ -353,7 +423,7 @@ public static class StarBattleUtility
         {
             for (int c = col - 1; c <= col + 1; c++)
             {
-                if (r >= 0 && r < board.Count && c >= 0 && c < board.Count && (r != row || c != col) && board[r][c].IsPlecedByUser == false)
+                if (r >= 0 && r < board.Count && c >= 0 && c < board.Count && (r != row || c != col) && board[r][c].IsPlacedByUser == false)
                 {
                     if (board[r][c].Cell == StarBattleCellEnum.MarkedX)
                     {

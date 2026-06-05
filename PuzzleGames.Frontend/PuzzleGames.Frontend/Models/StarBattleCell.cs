@@ -9,7 +9,8 @@ public class StarBattleCell
     }
     public StarBattleCellEnum Cell { get; set; }
     public StarBattleCellColorEnum Color { get; set; }
-    public bool IsPlecedByUser { get; set; } = false;
+    public bool IsPlacedByUser { get; set; } = false;
+    public bool IsValid {get; set;} = true;
 
     public string ConvertColor()
     {
